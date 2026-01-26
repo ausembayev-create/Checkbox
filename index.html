@@ -175,12 +175,6 @@
             margin-bottom: 10px;
         }
 
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #667eea;
-        }
-
         .reset-btn {
             margin-top: 20px;
             padding: 10px 20px;
@@ -191,6 +185,7 @@
             cursor: pointer;
             font-size: 14px;
             transition: background 0.3s;
+            width: 100%;
         }
 
         .reset-btn:hover {
@@ -200,27 +195,23 @@
 </head>
 <body>
     <div class="container">
-        <div class="loading" id="loading">Yuklanmoqda...</div>
-        
-        <div id="mainContent" style="display: none;">
-            <div class="header">
-                <input type="text" id="titleInput" placeholder="Sarlavhani kiriting...">
-            </div>
-            
-            <div class="input-section">
-                <input type="text" id="taskInput" placeholder="Yangi vazifa qo'shing...">
-                <button id="addButton">Qo'shish</button>
-            </div>
-
-            <ul class="tasks-list" id="tasksList"></ul>
-            
-            <div class="empty-state" id="emptyState">
-                <div class="empty-state-icon">📝</div>
-                <p>Hozircha vazifalar yo'q. Yuqorida yangi vazifa qo'shing!</p>
-            </div>
-
-            <button class="reset-btn" id="resetBtn">Barcha ma'lumotlarni tozalash</button>
+        <div class="header">
+            <input type="text" id="titleInput" placeholder="Sarlavhani kiriting...">
         </div>
+        
+        <div class="input-section">
+            <input type="text" id="taskInput" placeholder="Yangi vazifa qo'shing...">
+            <button id="addButton">Qo'shish</button>
+        </div>
+
+        <ul class="tasks-list" id="tasksList"></ul>
+        
+        <div class="empty-state" id="emptyState">
+            <div class="empty-state-icon">📝</div>
+            <p>Hozircha vazifalar yo'q. Yuqorida yangi vazifa qo'shing!</p>
+        </div>
+
+        <button class="reset-btn" id="resetBtn">Barcha ma'lumotlarni tozalash</button>
     </div>
 
     <script>
@@ -229,42 +220,29 @@
         const addButton = document.getElementById('addButton');
         const tasksList = document.getElementById('tasksList');
         const emptyState = document.getElementById('emptyState');
-        const loading = document.getElementById('loading');
-        const mainContent = document.getElementById('mainContent');
         const resetBtn = document.getElementById('resetBtn');
 
         let tasks = [];
         let currentTitle = '';
 
         // Ma'lumotlarni saqlash
-        async function saveData() {
-            try {
-                const data = {
-                    title: currentTitle,
-                    tasks: tasks
-                };
-                await window.storage.set('user_data', JSON.stringify(data), false);
-            } catch (error) {
-                console.error('Saqlashda xatolik:', error);
-            }
+        function saveData() {
+            const data = {
+                title: currentTitle,
+                tasks: tasks
+            };
+            localStorage.setItem('todoData', JSON.stringify(data));
         }
 
         // Ma'lumotlarni yuklash
-        async function loadData() {
-            try {
-                const result = await window.storage.get('user_data', false);
-                if (result && result.value) {
-                    const data = JSON.parse(result.value);
-                    currentTitle = data.title || '';
-                    tasks = data.tasks || [];
-                    titleInput.value = currentTitle;
-                }
-            } catch (error) {
-                console.log('Ma\'lumot topilmadi, yangi boshlash');
+        function loadData() {
+            const saved = localStorage.getItem('todoData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                currentTitle = data.title || '';
+                tasks = data.tasks || [];
+                titleInput.value = currentTitle;
             }
-            
-            loading.style.display = 'none';
-            mainContent.style.display = 'block';
             renderTasks();
         }
 
@@ -335,17 +313,13 @@
             saveData();
         }
 
-        async function resetData() {
+        function resetData() {
             if (confirm('Haqiqatan ham barcha ma\'lumotlarni o\'chirmoqchimisiz?')) {
-                try {
-                    await window.storage.delete('user_data', false);
-                    tasks = [];
-                    currentTitle = '';
-                    titleInput.value = '';
-                    renderTasks();
-                } catch (error) {
-                    console.error('O\'chirishda xatolik:', error);
-                }
+                localStorage.removeItem('todoData');
+                tasks = [];
+                currentTitle = '';
+                titleInput.value = '';
+                renderTasks();
             }
         }
 
@@ -362,8 +336,6 @@
             currentTitle = e.target.value;
             saveData();
         });
-
-        titleInput.addEventListener('blur', saveData);
 
         // Sahifa yuklanganda ma'lumotlarni yuklash
         loadData();
