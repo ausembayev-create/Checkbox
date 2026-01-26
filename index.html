@@ -59,33 +59,6 @@
             border-color: #667eea;
         }
 
-        .share-toggle {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            cursor: pointer;
-            user-select: none;
-            transition: background 0.3s;
-        }
-
-        .share-toggle:hover {
-            background: #e9ecef;
-        }
-
-        .share-toggle input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .share-toggle label {
-            cursor: pointer;
-            font-size: 15px;
-        }
-
         .new-list-btn {
             padding: 12px 25px;
             font-size: 16px;
@@ -102,27 +75,6 @@
             background: #5568d3;
         }
 
-        .filter-tabs {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .filter-tab {
-            padding: 8px 16px;
-            background: #f8f9fa;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .filter-tab.active {
-            background: #667eea;
-            color: white;
-        }
-
         .lists-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -135,39 +87,10 @@
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             padding: 25px;
             transition: transform 0.3s;
-            position: relative;
-        }
-
-        .list-card.shared {
-            border: 2px solid #28a745;
         }
 
         .list-card:hover {
             transform: translateY(-5px);
-        }
-
-        .shared-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #28a745;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .private-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #6c757d;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
         }
 
         .list-header {
@@ -175,7 +98,6 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            margin-top: 15px;
             padding-bottom: 15px;
             border-bottom: 2px solid #e0e0e0;
         }
@@ -352,13 +274,6 @@
             background: #5a6268;
         }
 
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: white;
-            font-size: 18px;
-        }
-
         .info-box {
             background: #e7f3ff;
             border-left: 4px solid #2196F3;
@@ -372,82 +287,37 @@
 </head>
 <body>
     <div class="main-container">
-        <div id="loading" class="loading">Yuklanmoqda...</div>
-        
-        <div id="mainContent" style="display: none;">
-            <div class="header">
-                <h1>📋 Vazifalar Ro'yxati</h1>
-                <div class="info-box">
-                    <strong>💡 Maslahat:</strong> Umumiy ro'yxatlarni hamma foydalanuvchilar ko'radi va tahrirlashi mumkin. Shaxsiy ro'yxatlar faqat sizda saqlanadi.
-                </div>
-                <div class="new-list-section">
-                    <input type="text" id="newListInput" class="new-list-input" placeholder="Yangi ro'yxat sarlavhasi (masalan: Bozordan olish kerak)">
-                    <div class="share-toggle">
-                        <input type="checkbox" id="shareCheckbox">
-                        <label for="shareCheckbox">🌐 Umumiy ro'yxat</label>
-                    </div>
-                    <button id="newListBtn" class="new-list-btn">+ Ro'yxat yaratish</button>
-                </div>
-                <div class="filter-tabs">
-                    <button class="filter-tab active" data-filter="all">Hammasi</button>
-                    <button class="filter-tab" data-filter="private">Shaxsiy</button>
-                    <button class="filter-tab" data-filter="shared">Umumiy</button>
-                </div>
-                <button id="resetAllBtn" class="reset-all-btn">Shaxsiy ma'lumotlarni tozalash</button>
+        <div class="header">
+            <h1>📋 Vazifalar Ro'yxati</h1>
+            <div class="info-box">
+                <strong>💡 Ma'lumot:</strong> Barcha ma'lumotlar sizning brauzeringizda saqlanadi. Sayt yangilanganda ham ma'lumotlaringiz o'chib ketmaydi!
             </div>
+            <div class="new-list-section">
+                <input type="text" id="newListInput" class="new-list-input" placeholder="Yangi ro'yxat sarlavhasi (masalan: Bozordan olish kerak)">
+                <button id="newListBtn" class="new-list-btn">+ Ro'yxat yaratish</button>
+            </div>
+            <button id="resetAllBtn" class="reset-all-btn">Barcha ma'lumotlarni tozalash</button>
+        </div>
 
-            <div id="listsContainer" class="lists-container"></div>
-            <div id="noLists" class="no-lists" style="display: none;">
-                <div style="font-size: 60px; margin-bottom: 20px;">📝</div>
-                <p>Hozircha ro'yxatlar yo'q. Yuqorida yangi ro'yxat yarating!</p>
-            </div>
+        <div id="listsContainer" class="lists-container"></div>
+        <div id="noLists" class="no-lists" style="display: none;">
+            <div style="font-size: 60px; margin-bottom: 20px;">📝</div>
+            <p>Hozircha ro'yxatlar yo'q. Yuqorida yangi ro'yxat yarating!</p>
         </div>
     </div>
 
     <script>
-        let privateLists = [];
-        let sharedLists = [];
-        let currentFilter = 'all';
+        let lists = [];
 
-        async function saveData() {
-            try {
-                localStorage.setItem('privateLists', JSON.stringify(privateLists));
-                
-                for (const list of sharedLists) {
-                    await window.storage.set(`shared_list_${list.id}`, JSON.stringify(list), true);
-                }
-            } catch (error) {
-                console.error('Saqlashda xatolik:', error);
-            }
+        function saveData() {
+            localStorage.setItem('allLists', JSON.stringify(lists));
         }
 
-        async function loadData() {
-            try {
-                const saved = localStorage.getItem('privateLists');
-                if (saved) {
-                    privateLists = JSON.parse(saved);
-                }
-
-                const sharedKeys = await window.storage.list('shared_list_', true);
-                if (sharedKeys && sharedKeys.keys) {
-                    sharedLists = [];
-                    for (const key of sharedKeys.keys) {
-                        try {
-                            const result = await window.storage.get(key, true);
-                            if (result && result.value) {
-                                sharedLists.push(JSON.parse(result.value));
-                            }
-                        } catch (error) {
-                            console.log('Ro\'yxat yuklanmadi:', key);
-                        }
-                    }
-                }
-            } catch (error) {
-                console.log('Ma\'lumot yuklashda xatolik:', error);
+        function loadData() {
+            const saved = localStorage.getItem('allLists');
+            if (saved) {
+                lists = JSON.parse(saved);
             }
-            
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
             renderLists();
         }
 
@@ -455,17 +325,7 @@
             const container = document.getElementById('listsContainer');
             const noLists = document.getElementById('noLists');
             
-            let allLists = [];
-            
-            if (currentFilter === 'all' || currentFilter === 'private') {
-                allLists = allLists.concat(privateLists.map(l => ({...l, isShared: false})));
-            }
-            
-            if (currentFilter === 'all' || currentFilter === 'shared') {
-                allLists = allLists.concat(sharedLists.map(l => ({...l, isShared: true})));
-            }
-            
-            if (allLists.length === 0) {
+            if (lists.length === 0) {
                 container.innerHTML = '';
                 noLists.style.display = 'block';
                 return;
@@ -474,48 +334,42 @@
             noLists.style.display = 'none';
             container.innerHTML = '';
 
-            allLists.forEach((list, index) => {
+            lists.forEach((list, listIndex) => {
                 const listCard = document.createElement('div');
-                listCard.className = `list-card ${list.isShared ? 'shared' : ''}`;
+                listCard.className = 'list-card';
 
                 const completedCount = list.tasks.filter(t => t.completed).length;
                 const totalCount = list.tasks.length;
 
-                const badge = list.isShared 
-                    ? '<span class="shared-badge">🌐 Umumiy</span>'
-                    : '<span class="private-badge">🔒 Shaxsiy</span>';
-
                 listCard.innerHTML = `
-                    ${badge}
                     <div class="list-header">
                         <div class="list-title">${list.title}</div>
-                        <button class="delete-list-btn" onclick="deleteList(${list.isShared}, '${list.id}')">O'chirish</button>
+                        <button class="delete-list-btn" onclick="deleteList(${listIndex})">O'chirish</button>
                     </div>
                     <div class="task-input-section">
-                        <input type="text" class="task-input" id="taskInput${list.id}" placeholder="Yangi vazifa...">
-                        <button class="add-task-btn" onclick="addTask(${list.isShared}, '${list.id}')">+</button>
+                        <input type="text" class="task-input" id="taskInput${listIndex}" placeholder="Yangi vazifa...">
+                        <button class="add-task-btn" onclick="addTask(${listIndex})">+</button>
                     </div>
-                    <ul class="tasks-list" id="tasksList${list.id}"></ul>
+                    <ul class="tasks-list" id="tasksList${listIndex}"></ul>
                     <div class="task-count">${completedCount} / ${totalCount} bajarildi</div>
                 `;
 
                 container.appendChild(listCard);
 
-                const taskInput = document.getElementById(`taskInput${list.id}`);
+                const taskInput = document.getElementById(`taskInput${listIndex}`);
                 taskInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') {
-                        addTask(list.isShared, list.id);
+                        addTask(listIndex);
                     }
                 });
 
-                renderTasks(list.isShared, list.id);
+                renderTasks(listIndex);
             });
         }
 
-        function renderTasks(isShared, listId) {
-            const tasksList = document.getElementById(`tasksList${listId}`);
-            const lists = isShared ? sharedLists : privateLists;
-            const list = lists.find(l => l.id === listId);
+        function renderTasks(listIndex) {
+            const tasksList = document.getElementById(`tasksList${listIndex}`);
+            const list = lists[listIndex];
 
             if (!list || !tasksList) return;
 
@@ -547,10 +401,10 @@
                 deleteBtn.textContent = '×';
                 deleteBtn.onclick = (e) => {
                     e.stopPropagation();
-                    deleteTask(isShared, listId, taskIndex);
+                    deleteTask(listIndex, taskIndex);
                 };
 
-                li.onclick = () => toggleTask(isShared, listId, taskIndex);
+                li.onclick = () => toggleTask(listIndex, taskIndex);
 
                 li.appendChild(checkbox);
                 li.appendChild(taskText);
@@ -559,94 +413,60 @@
             });
         }
 
-        async function createList() {
+        function createList() {
             const input = document.getElementById('newListInput');
             const title = input.value.trim();
-            const isShared = document.getElementById('shareCheckbox').checked;
 
             if (title) {
-                const newList = {
-                    id: Date.now().toString(),
+                lists.push({
                     title: title,
                     tasks: []
-                };
-
-                if (isShared) {
-                    sharedLists.push(newList);
-                } else {
-                    privateLists.push(newList);
-                }
-
+                });
                 input.value = '';
-                document.getElementById('shareCheckbox').checked = false;
-                await saveData();
+                saveData();
                 renderLists();
             }
         }
 
-        async function deleteList(isShared, listId) {
+        function deleteList(listIndex) {
             if (confirm('Bu ro\'yxatni o\'chirmoqchimisiz?')) {
-                if (isShared) {
-                    sharedLists = sharedLists.filter(l => l.id !== listId);
-                    try {
-                        await window.storage.delete(`shared_list_${listId}`, true);
-                    } catch (error) {
-                        console.error('O\'chirishda xatolik:', error);
-                    }
-                } else {
-                    privateLists = privateLists.filter(l => l.id !== listId);
-                }
-                await saveData();
+                lists.splice(listIndex, 1);
+                saveData();
                 renderLists();
             }
         }
 
-        async function addTask(isShared, listId) {
-            const input = document.getElementById(`taskInput${listId}`);
+        function addTask(listIndex) {
+            const input = document.getElementById(`taskInput${listIndex}`);
             const text = input.value.trim();
 
             if (text) {
-                const lists = isShared ? sharedLists : privateLists;
-                const list = lists.find(l => l.id === listId);
-                
-                if (list) {
-                    list.tasks.push({
-                        text: text,
-                        completed: false
-                    });
-                    input.value = '';
-                    await saveData();
-                    renderLists();
-                }
-            }
-        }
-
-        async function toggleTask(isShared, listId, taskIndex) {
-            const lists = isShared ? sharedLists : privateLists;
-            const list = lists.find(l => l.id === listId);
-            
-            if (list) {
-                list.tasks[taskIndex].completed = !list.tasks[taskIndex].completed;
-                await saveData();
+                lists[listIndex].tasks.push({
+                    text: text,
+                    completed: false
+                });
+                input.value = '';
+                saveData();
                 renderLists();
             }
         }
 
-        async function deleteTask(isShared, listId, taskIndex) {
-            const lists = isShared ? sharedLists : privateLists;
-            const list = lists.find(l => l.id === listId);
-            
-            if (list) {
-                list.tasks.splice(taskIndex, 1);
-                await saveData();
-                renderLists();
-            }
+        function toggleTask(listIndex, taskIndex) {
+            lists[listIndex].tasks[taskIndex].completed = !lists[listIndex].tasks[taskIndex].completed;
+            saveData();
+            renderLists();
         }
 
-        async function resetAll() {
-            if (confirm('Faqat shaxsiy ro\'yxatlaringiz o\'chiriladi. Umumiy ro\'yxatlar saqlanadi. Davom etasizmi?')) {
-                privateLists = [];
-                localStorage.removeItem('privateLists');
+        function deleteTask(listIndex, taskIndex) {
+            lists[listIndex].tasks.splice(taskIndex, 1);
+            saveData();
+            renderLists();
+        }
+
+        function resetAll() {
+            if (confirm('Haqiqatan ham barcha ro\'yxatlarni o\'chirmoqchimisiz?')) {
+                lists = [];
+                localStorage.removeItem('allLists');
                 renderLists();
             }
         }
@@ -658,15 +478,6 @@
             }
         });
         document.getElementById('resetAllBtn').onclick = resetAll;
-
-        document.querySelectorAll('.filter-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                currentFilter = tab.dataset.filter;
-                renderLists();
-            });
-        });
 
         loadData();
     </script>
