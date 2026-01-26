@@ -16,46 +16,34 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
-        .container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            max-width: 600px;
-            width: 100%;
-            padding: 30px;
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .header {
-            margin-bottom: 30px;
-        }
-
-        #titleInput {
-            width: 100%;
-            font-size: 28px;
-            font-weight: bold;
-            border: none;
-            border-bottom: 2px solid #e0e0e0;
-            padding: 10px 0;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        #titleInput:focus {
-            border-bottom-color: #667eea;
-        }
-
-        .input-section {
-            display: flex;
-            gap: 10px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
 
-        #taskInput {
+        .header h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .new-list-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .new-list-input {
             flex: 1;
             padding: 12px 15px;
             font-size: 16px;
@@ -65,11 +53,11 @@
             transition: border-color 0.3s;
         }
 
-        #taskInput:focus {
+        .new-list-input:focus {
             border-color: #667eea;
         }
 
-        #addButton {
+        .new-list-btn {
             padding: 12px 25px;
             font-size: 16px;
             background: #667eea;
@@ -81,45 +69,125 @@
             font-weight: 600;
         }
 
-        #addButton:hover {
+        .new-list-btn:hover {
             background: #5568d3;
         }
 
-        #addButton:active {
-            transform: scale(0.98);
+        .lists-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .list-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            transition: transform 0.3s;
+        }
+
+        .list-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .list-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .delete-list-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.3s;
+        }
+
+        .delete-list-btn:hover {
+            background: #c82333;
+        }
+
+        .task-input-section {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .task-input {
+            flex: 1;
+            padding: 10px 12px;
+            font-size: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .task-input:focus {
+            border-color: #667eea;
+        }
+
+        .add-task-btn {
+            padding: 10px 15px;
+            font-size: 14px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .add-task-btn:hover {
+            background: #5568d3;
         }
 
         .tasks-list {
             list-style: none;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
         .task-item {
             display: flex;
             align-items: center;
-            padding: 15px;
-            margin-bottom: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
             background: #f8f9fa;
-            border-radius: 8px;
+            border-radius: 6px;
             transition: all 0.3s;
             cursor: pointer;
         }
 
         .task-item:hover {
             background: #e9ecef;
-            transform: translateX(5px);
         }
 
         .task-item.completed {
-            opacity: 0.7;
+            opacity: 0.6;
         }
 
         .checkbox {
-            width: 20px;
-            height: 20px;
-            min-width: 20px;
+            width: 18px;
+            height: 18px;
+            min-width: 18px;
             border: 2px solid #667eea;
             border-radius: 4px;
-            margin-right: 15px;
+            margin-right: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -135,11 +203,12 @@
             content: '✓';
             color: white;
             font-weight: bold;
+            font-size: 12px;
         }
 
         .task-text {
             flex: 1;
-            font-size: 16px;
+            font-size: 15px;
             transition: all 0.3s;
         }
 
@@ -148,196 +217,253 @@
             color: #6c757d;
         }
 
-        .delete-btn {
+        .delete-task-btn {
             background: #dc3545;
             color: white;
             border: none;
-            padding: 6px 12px;
-            border-radius: 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             transition: background 0.3s;
-            margin-left: 10px;
         }
 
-        .delete-btn:hover {
+        .delete-task-btn:hover {
             background: #c82333;
         }
 
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
+            padding: 30px;
             color: #6c757d;
         }
 
         .empty-state-icon {
-            font-size: 48px;
+            font-size: 40px;
             margin-bottom: 10px;
         }
 
-        .reset-btn {
-            margin-top: 20px;
-            padding: 10px 20px;
+        .task-count {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 10px;
+        }
+
+        .no-lists {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .reset-all-btn {
             background: #6c757d;
             color: white;
             border: none;
+            padding: 12px 25px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
             transition: background 0.3s;
-            width: 100%;
+            margin-top: 10px;
         }
 
-        .reset-btn:hover {
+        .reset-all-btn:hover {
             background: #5a6268;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="main-container">
         <div class="header">
-            <input type="text" id="titleInput" placeholder="Sarlavhani kiriting...">
-        </div>
-        
-        <div class="input-section">
-            <input type="text" id="taskInput" placeholder="Yangi vazifa qo'shing...">
-            <button id="addButton">Qo'shish</button>
-        </div>
-
-        <ul class="tasks-list" id="tasksList"></ul>
-        
-        <div class="empty-state" id="emptyState">
-            <div class="empty-state-icon">📝</div>
-            <p>Hozircha vazifalar yo'q. Yuqorida yangi vazifa qo'shing!</p>
+            <h1>📋 Vazifalar Ro'yxati</h1>
+            <div class="new-list-section">
+                <input type="text" id="newListInput" class="new-list-input" placeholder="Yangi ro'yxat sarlavhasi (masalan: Bozordan olish kerak)">
+                <button id="newListBtn" class="new-list-btn">+ Ro'yxat yaratish</button>
+            </div>
+            <button id="resetAllBtn" class="reset-all-btn">Barchasini tozalash</button>
         </div>
 
-        <button class="reset-btn" id="resetBtn">Barcha ma'lumotlarni tozalash</button>
+        <div id="listsContainer" class="lists-container"></div>
+        <div id="noLists" class="no-lists" style="display: none;">
+            <div style="font-size: 60px; margin-bottom: 20px;">📝</div>
+            <p>Hozircha ro'yxatlar yo'q. Yuqorida yangi ro'yxat yarating!</p>
+        </div>
     </div>
 
     <script>
-        const titleInput = document.getElementById('titleInput');
-        const taskInput = document.getElementById('taskInput');
-        const addButton = document.getElementById('addButton');
-        const tasksList = document.getElementById('tasksList');
-        const emptyState = document.getElementById('emptyState');
-        const resetBtn = document.getElementById('resetBtn');
+        let lists = [];
 
-        let tasks = [];
-        let currentTitle = '';
-
-        // Ma'lumotlarni saqlash
         function saveData() {
-            const data = {
-                title: currentTitle,
-                tasks: tasks
-            };
-            localStorage.setItem('todoData', JSON.stringify(data));
+            localStorage.setItem('allLists', JSON.stringify(lists));
         }
 
-        // Ma'lumotlarni yuklash
         function loadData() {
-            const saved = localStorage.getItem('todoData');
+            const saved = localStorage.getItem('allLists');
             if (saved) {
-                const data = JSON.parse(saved);
-                currentTitle = data.title || '';
-                tasks = data.tasks || [];
-                titleInput.value = currentTitle;
+                lists = JSON.parse(saved);
             }
-            renderTasks();
+            renderLists();
         }
 
-        function updateEmptyState() {
-            if (tasks.length === 0) {
-                emptyState.style.display = 'block';
-                tasksList.style.display = 'none';
-            } else {
-                emptyState.style.display = 'none';
-                tasksList.style.display = 'block';
+        function renderLists() {
+            const container = document.getElementById('listsContainer');
+            const noLists = document.getElementById('noLists');
+            
+            if (lists.length === 0) {
+                container.innerHTML = '';
+                noLists.style.display = 'block';
+                return;
             }
+
+            noLists.style.display = 'none';
+            container.innerHTML = '';
+
+            lists.forEach((list, listIndex) => {
+                const listCard = document.createElement('div');
+                listCard.className = 'list-card';
+
+                const completedCount = list.tasks.filter(t => t.completed).length;
+                const totalCount = list.tasks.length;
+
+                listCard.innerHTML = `
+                    <div class="list-header">
+                        <div class="list-title">${list.title}</div>
+                        <button class="delete-list-btn" onclick="deleteList(${listIndex})">O'chirish</button>
+                    </div>
+                    <div class="task-input-section">
+                        <input type="text" class="task-input" id="taskInput${listIndex}" placeholder="Yangi vazifa...">
+                        <button class="add-task-btn" onclick="addTask(${listIndex})">+</button>
+                    </div>
+                    <ul class="tasks-list" id="tasksList${listIndex}"></ul>
+                    <div class="task-count">${completedCount} / ${totalCount} bajarildi</div>
+                `;
+
+                container.appendChild(listCard);
+
+                const taskInput = document.getElementById(`taskInput${listIndex}`);
+                taskInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        addTask(listIndex);
+                    }
+                });
+
+                renderTasks(listIndex);
+            });
         }
 
-        function renderTasks() {
+        function renderTasks(listIndex) {
+            const tasksList = document.getElementById(`tasksList${listIndex}`);
+            const list = lists[listIndex];
+
+            if (!list || !tasksList) return;
+
             tasksList.innerHTML = '';
-            tasks.forEach((task, index) => {
+
+            if (list.tasks.length === 0) {
+                tasksList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✨</div>
+                        <p>Vazifalar yo'q</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.tasks.forEach((task, taskIndex) => {
                 const li = document.createElement('li');
                 li.className = `task-item ${task.completed ? 'completed' : ''}`;
-                
+
                 const checkbox = document.createElement('div');
                 checkbox.className = 'checkbox';
-                
+
                 const taskText = document.createElement('span');
                 taskText.className = 'task-text';
                 taskText.textContent = task.text;
-                
+
                 const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'delete-btn';
-                deleteBtn.textContent = 'O\'chirish';
+                deleteBtn.className = 'delete-task-btn';
+                deleteBtn.textContent = '×';
                 deleteBtn.onclick = (e) => {
                     e.stopPropagation();
-                    deleteTask(index);
+                    deleteTask(listIndex, taskIndex);
                 };
-                
-                li.onclick = () => toggleTask(index);
-                
+
+                li.onclick = () => toggleTask(listIndex, taskIndex);
+
                 li.appendChild(checkbox);
                 li.appendChild(taskText);
                 li.appendChild(deleteBtn);
                 tasksList.appendChild(li);
             });
-            
-            updateEmptyState();
         }
 
-        function addTask() {
-            const taskText = taskInput.value.trim();
-            if (taskText) {
-                tasks.push({
-                    text: taskText,
+        function createList() {
+            const input = document.getElementById('newListInput');
+            const title = input.value.trim();
+
+            if (title) {
+                lists.push({
+                    title: title,
+                    tasks: []
+                });
+                input.value = '';
+                saveData();
+                renderLists();
+            }
+        }
+
+        function deleteList(listIndex) {
+            if (confirm('Bu ro\'yxatni o\'chirmoqchimisiz?')) {
+                lists.splice(listIndex, 1);
+                saveData();
+                renderLists();
+            }
+        }
+
+        function addTask(listIndex) {
+            const input = document.getElementById(`taskInput${listIndex}`);
+            const text = input.value.trim();
+
+            if (text) {
+                lists[listIndex].tasks.push({
+                    text: text,
                     completed: false
                 });
-                taskInput.value = '';
-                renderTasks();
+                input.value = '';
                 saveData();
+                renderLists();
             }
         }
 
-        function toggleTask(index) {
-            tasks[index].completed = !tasks[index].completed;
-            renderTasks();
+        function toggleTask(listIndex, taskIndex) {
+            lists[listIndex].tasks[taskIndex].completed = !lists[listIndex].tasks[taskIndex].completed;
             saveData();
+            renderLists();
         }
 
-        function deleteTask(index) {
-            tasks.splice(index, 1);
-            renderTasks();
+        function deleteTask(listIndex, taskIndex) {
+            lists[listIndex].tasks.splice(taskIndex, 1);
             saveData();
+            renderLists();
         }
 
-        function resetData() {
-            if (confirm('Haqiqatan ham barcha ma\'lumotlarni o\'chirmoqchimisiz?')) {
-                localStorage.removeItem('todoData');
-                tasks = [];
-                currentTitle = '';
-                titleInput.value = '';
-                renderTasks();
+        function resetAll() {
+            if (confirm('Haqiqatan ham barcha ro\'yxatlarni o\'chirmoqchimisiz?')) {
+                lists = [];
+                localStorage.removeItem('allLists');
+                renderLists();
             }
         }
 
-        addButton.onclick = addTask;
-        resetBtn.onclick = resetData;
-        
-        taskInput.addEventListener('keypress', (e) => {
+        document.getElementById('newListBtn').onclick = createList;
+        document.getElementById('newListInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                addTask();
+                createList();
             }
         });
+        document.getElementById('resetAllBtn').onclick = resetAll;
 
-        titleInput.addEventListener('input', (e) => {
-            currentTitle = e.target.value;
-            saveData();
-        });
-
-        // Sahifa yuklanganda ma'lumotlarni yuklash
         loadData();
     </script>
 </body>
