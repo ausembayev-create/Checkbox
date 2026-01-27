@@ -59,6 +59,34 @@
             border-color: #667eea;
         }
 
+        .share-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.3s;
+        }
+
+        .share-toggle:hover {
+            background: #e9ecef;
+        }
+
+        .share-toggle input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .share-toggle label {
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
         .new-list-btn {
             padding: 12px 25px;
             font-size: 16px;
@@ -75,6 +103,27 @@
             background: #5568d3;
         }
 
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .filter-tab.active {
+            background: #667eea;
+            color: white;
+        }
+
         .lists-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -87,10 +136,39 @@
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             padding: 25px;
             transition: transform 0.3s;
+            position: relative;
+        }
+
+        .list-card.shared {
+            border: 2px solid #28a745;
         }
 
         .list-card:hover {
             transform: translateY(-5px);
+        }
+
+        .shared-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #28a745;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .private-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #6c757d;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
         }
 
         .list-header {
@@ -98,6 +176,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            margin-top: 15px;
             padding-bottom: 15px;
             border-bottom: 2px solid #e0e0e0;
         }
@@ -283,20 +362,59 @@
             font-size: 14px;
             color: #1976D2;
         }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 15px;
+            margin-top: 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #856404;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #28a745;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
     </style>
 </head>
 <body>
     <div class="main-container">
         <div class="header">
-            <h1>📋 Vazifalar Ro'yxati</h1>
+            <h1>📋 Vazifalar Ro'yxati <span class="status-indicator"></span></h1>
             <div class="info-box">
-                <strong>💡 Ma'lumot:</strong> Barcha ma'lumotlar sizning brauzeringizda saqlanadi. Sayt yangilanganda ham ma'lumotlaringiz o'chib ketmaydi!
+                <strong>💡 Real-time ulashish Firebase bilan!</strong>
+                <br>🔒 <strong>Shaxsiy ro'yxatlar</strong> - Faqat sizda saqlanadi
+                <br>🌐 <strong>Umumiy ro'yxatlar</strong> - Hamma ko'radi va tahrirlaydi (real-time)
+            </div>
+            <div class="warning-box">
+                ⚠️ <strong>Diqqat:</strong> Umumiy ro'yxatlar hammaga ochiq! Maxfiy ma'lumotlar uchun shaxsiy ro'yxat yarating.
             </div>
             <div class="new-list-section">
-                <input type="text" id="newListInput" class="new-list-input" placeholder="Yangi ro'yxat sarlavhasi (masalan: Bozordan olish kerak)">
+                <input type="text" id="newListInput" class="new-list-input" placeholder="Yangi ro'yxat sarlavhasi">
+                <div class="share-toggle">
+                    <input type="checkbox" id="shareCheckbox">
+                    <label for="shareCheckbox">🌐 Umumiy ro'yxat</label>
+                </div>
                 <button id="newListBtn" class="new-list-btn">+ Ro'yxat yaratish</button>
             </div>
-            <button id="resetAllBtn" class="reset-all-btn">Barcha ma'lumotlarni tozalash</button>
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">Hammasi</button>
+                <button class="filter-tab" data-filter="private">Shaxsiy</button>
+                <button class="filter-tab" data-filter="shared">Umumiy</button>
+            </div>
+            <button id="resetAllBtn" class="reset-all-btn">Shaxsiy ma'lumotlarni tozalash</button>
         </div>
 
         <div id="listsContainer" class="lists-container"></div>
@@ -306,26 +424,76 @@
         </div>
     </div>
 
-    <script>
-        let lists = [];
+    <!-- Firebase SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-database-compat.min.js"></script>
 
-        function saveData() {
-            localStorage.setItem('allLists', JSON.stringify(lists));
+    <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCwtHihzq8qFRCaCsZtJBC16cPG-DUWho0",
+            authDomain: "checkbox-5b848.firebaseapp.com",
+            databaseURL: "https://checkbox-5b848-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "checkbox-5b848",
+            storageBucket: "checkbox-5b848.firebasestorage.app",
+            messagingSenderId: "461550771942",
+            appId: "1:461550771942:web:53def1224b2f8ded95e527",
+            measurementId: "G-1VHZ91HQ72"
+        };
+
+        // Firebase ni ishga tushirish
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let privateLists = [];
+        let sharedLists = [];
+        let currentFilter = 'all';
+
+        // Shaxsiy ma'lumotlarni saqlash
+        function savePrivateData() {
+            localStorage.setItem('privateLists', JSON.stringify(privateLists));
         }
 
-        function loadData() {
-            const saved = localStorage.getItem('allLists');
+        // Shaxsiy ma'lumotlarni yuklash
+        function loadPrivateData() {
+            const saved = localStorage.getItem('privateLists');
             if (saved) {
-                lists = JSON.parse(saved);
+                privateLists = JSON.parse(saved);
             }
-            renderLists();
+        }
+
+        // Firebase'dan umumiy ro'yxatlarni yuklash (real-time)
+        function loadSharedLists() {
+            database.ref('sharedLists').on('value', (snapshot) => {
+                sharedLists = [];
+                const data = snapshot.val();
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        sharedLists.push({
+                            ...data[key],
+                            id: key
+                        });
+                    });
+                }
+                renderLists();
+            });
         }
 
         function renderLists() {
             const container = document.getElementById('listsContainer');
             const noLists = document.getElementById('noLists');
             
-            if (lists.length === 0) {
+            let allLists = [];
+            
+            if (currentFilter === 'all' || currentFilter === 'private') {
+                allLists = allLists.concat(privateLists.map(l => ({...l, isShared: false})));
+            }
+            
+            if (currentFilter === 'all' || currentFilter === 'shared') {
+                allLists = allLists.concat(sharedLists.map(l => ({...l, isShared: true})));
+            }
+            
+            if (allLists.length === 0) {
                 container.innerHTML = '';
                 noLists.style.display = 'block';
                 return;
@@ -334,48 +502,54 @@
             noLists.style.display = 'none';
             container.innerHTML = '';
 
-            lists.forEach((list, listIndex) => {
+            allLists.forEach((list) => {
                 const listCard = document.createElement('div');
-                listCard.className = 'list-card';
+                listCard.className = `list-card ${list.isShared ? 'shared' : ''}`;
 
-                const completedCount = list.tasks.filter(t => t.completed).length;
-                const totalCount = list.tasks.length;
+                const completedCount = list.tasks ? list.tasks.filter(t => t.completed).length : 0;
+                const totalCount = list.tasks ? list.tasks.length : 0;
+
+                const badge = list.isShared 
+                    ? '<span class="shared-badge">🌐 Umumiy</span>'
+                    : '<span class="private-badge">🔒 Shaxsiy</span>';
 
                 listCard.innerHTML = `
+                    ${badge}
                     <div class="list-header">
                         <div class="list-title">${list.title}</div>
-                        <button class="delete-list-btn" onclick="deleteList(${listIndex})">O'chirish</button>
+                        <button class="delete-list-btn" onclick="deleteList(${list.isShared}, '${list.id}')">O'chirish</button>
                     </div>
                     <div class="task-input-section">
-                        <input type="text" class="task-input" id="taskInput${listIndex}" placeholder="Yangi vazifa...">
-                        <button class="add-task-btn" onclick="addTask(${listIndex})">+</button>
+                        <input type="text" class="task-input" id="taskInput${list.id}" placeholder="Yangi vazifa...">
+                        <button class="add-task-btn" onclick="addTask(${list.isShared}, '${list.id}')">+</button>
                     </div>
-                    <ul class="tasks-list" id="tasksList${listIndex}"></ul>
+                    <ul class="tasks-list" id="tasksList${list.id}"></ul>
                     <div class="task-count">${completedCount} / ${totalCount} bajarildi</div>
                 `;
 
                 container.appendChild(listCard);
 
-                const taskInput = document.getElementById(`taskInput${listIndex}`);
+                const taskInput = document.getElementById(`taskInput${list.id}`);
                 taskInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') {
-                        addTask(listIndex);
+                        addTask(list.isShared, list.id);
                     }
                 });
 
-                renderTasks(listIndex);
+                renderTasks(list.isShared, list.id);
             });
         }
 
-        function renderTasks(listIndex) {
-            const tasksList = document.getElementById(`tasksList${listIndex}`);
-            const list = lists[listIndex];
+        function renderTasks(isShared, listId) {
+            const tasksList = document.getElementById(`tasksList${listId}`);
+            const lists = isShared ? sharedLists : privateLists;
+            const list = lists.find(l => l.id === listId);
 
             if (!list || !tasksList) return;
 
             tasksList.innerHTML = '';
 
-            if (list.tasks.length === 0) {
+            if (!list.tasks || list.tasks.length === 0) {
                 tasksList.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">✨</div>
@@ -401,10 +575,10 @@
                 deleteBtn.textContent = '×';
                 deleteBtn.onclick = (e) => {
                     e.stopPropagation();
-                    deleteTask(listIndex, taskIndex);
+                    deleteTask(isShared, listId, taskIndex);
                 };
 
-                li.onclick = () => toggleTask(listIndex, taskIndex);
+                li.onclick = () => toggleTask(isShared, listId, taskIndex);
 
                 li.appendChild(checkbox);
                 li.appendChild(taskText);
@@ -416,57 +590,104 @@
         function createList() {
             const input = document.getElementById('newListInput');
             const title = input.value.trim();
+            const isShared = document.getElementById('shareCheckbox').checked;
 
             if (title) {
-                lists.push({
+                const newList = {
                     title: title,
                     tasks: []
-                });
+                };
+
+                if (isShared) {
+                    const newRef = database.ref('sharedLists').push();
+                    newRef.set(newList);
+                } else {
+                    newList.id = Date.now().toString();
+                    privateLists.push(newList);
+                    savePrivateData();
+                    renderLists();
+                }
+
                 input.value = '';
-                saveData();
-                renderLists();
+                document.getElementById('shareCheckbox').checked = false;
             }
         }
 
-        function deleteList(listIndex) {
+        function deleteList(isShared, listId) {
             if (confirm('Bu ro\'yxatni o\'chirmoqchimisiz?')) {
-                lists.splice(listIndex, 1);
-                saveData();
-                renderLists();
+                if (isShared) {
+                    database.ref('sharedLists/' + listId).remove();
+                } else {
+                    privateLists = privateLists.filter(l => l.id !== listId);
+                    savePrivateData();
+                    renderLists();
+                }
             }
         }
 
-        function addTask(listIndex) {
-            const input = document.getElementById(`taskInput${listIndex}`);
+        function addTask(isShared, listId) {
+            const input = document.getElementById(`taskInput${listId}`);
             const text = input.value.trim();
 
             if (text) {
-                lists[listIndex].tasks.push({
-                    text: text,
-                    completed: false
-                });
+                if (isShared) {
+                    const list = sharedLists.find(l => l.id === listId);
+                    if (list) {
+                        const tasks = list.tasks || [];
+                        tasks.push({ text: text, completed: false });
+                        database.ref('sharedLists/' + listId + '/tasks').set(tasks);
+                    }
+                } else {
+                    const list = privateLists.find(l => l.id === listId);
+                    if (list) {
+                        if (!list.tasks) list.tasks = [];
+                        list.tasks.push({ text: text, completed: false });
+                        savePrivateData();
+                        renderLists();
+                    }
+                }
                 input.value = '';
-                saveData();
-                renderLists();
             }
         }
 
-        function toggleTask(listIndex, taskIndex) {
-            lists[listIndex].tasks[taskIndex].completed = !lists[listIndex].tasks[taskIndex].completed;
-            saveData();
-            renderLists();
+        function toggleTask(isShared, listId, taskIndex) {
+            if (isShared) {
+                const list = sharedLists.find(l => l.id === listId);
+                if (list && list.tasks) {
+                    list.tasks[taskIndex].completed = !list.tasks[taskIndex].completed;
+                    database.ref('sharedLists/' + listId + '/tasks').set(list.tasks);
+                }
+            } else {
+                const list = privateLists.find(l => l.id === listId);
+                if (list && list.tasks) {
+                    list.tasks[taskIndex].completed = !list.tasks[taskIndex].completed;
+                    savePrivateData();
+                    renderLists();
+                }
+            }
         }
 
-        function deleteTask(listIndex, taskIndex) {
-            lists[listIndex].tasks.splice(taskIndex, 1);
-            saveData();
-            renderLists();
+        function deleteTask(isShared, listId, taskIndex) {
+            if (isShared) {
+                const list = sharedLists.find(l => l.id === listId);
+                if (list && list.tasks) {
+                    list.tasks.splice(taskIndex, 1);
+                    database.ref('sharedLists/' + listId + '/tasks').set(list.tasks);
+                }
+            } else {
+                const list = privateLists.find(l => l.id === listId);
+                if (list && list.tasks) {
+                    list.tasks.splice(taskIndex, 1);
+                    savePrivateData();
+                    renderLists();
+                }
+            }
         }
 
         function resetAll() {
-            if (confirm('Haqiqatan ham barcha ro\'yxatlarni o\'chirmoqchimisiz?')) {
-                lists = [];
-                localStorage.removeItem('allLists');
+            if (confirm('Faqat shaxsiy ro\'yxatlaringiz o\'chiriladi. Davom etasizmi?')) {
+                privateLists = [];
+                localStorage.removeItem('privateLists');
                 renderLists();
             }
         }
@@ -479,7 +700,19 @@
         });
         document.getElementById('resetAllBtn').onclick = resetAll;
 
-        loadData();
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.dataset.filter;
+                renderLists();
+            });
+        });
+
+        // Sahifa yuklanganda
+        loadPrivateData();
+        loadSharedLists();
+        renderLists();
     </script>
 </body>
 </html>
