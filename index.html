@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vazifalar Boshqaruvi Pro</title>
+    <title>Vazifalar Boshqaruvi</title>
     <style>
         :root {
             --primary: #667eea;
             --primary-dark: #5568d3;
-            --secondary: #764ba2;
             --success: #28a745;
             --danger: #dc3545;
             --warning: #ffc107;
-            --info: #17a2b8;
-            --bg-main: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-main: #f5f5f5;
             --bg-card: #ffffff;
             --text-main: #333;
             --text-secondary: #6c757d;
@@ -21,32 +19,11 @@
         }
 
         [data-theme="dark"] {
-            --bg-main: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            --bg-card: #0f3460;
+            --bg-main: #1a1a1a;
+            --bg-card: #2d2d2d;
             --text-main: #e0e0e0;
             --text-secondary: #a0a0a0;
-            --border: #2d3748;
-        }
-
-        [data-theme="custom"] {
-            --primary: #ff6b6b;
-            --primary-dark: #ee5a6f;
-            --bg-main: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
-            --bg-card: #fff5f7;
-        }
-
-        [data-theme="ocean"] {
-            --primary: #00d4ff;
-            --primary-dark: #00b8e6;
-            --bg-main: linear-gradient(135deg, #0093e9 0%, #80d0c7 100%);
-            --bg-card: #f0f9ff;
-        }
-
-        [data-theme="sunset"] {
-            --primary: #ff6b35;
-            --primary-dark: #f7931e;
-            --bg-main: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            --bg-card: #fff8f0;
+            --border: #404040;
         }
 
         * {
@@ -55,464 +32,317 @@
             box-sizing: border-box;
         }
 
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(-100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--bg-main);
-            background-size: 200% 200%;
-            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
             color: var(--text-main);
+            transition: all 0.3s ease;
         }
 
         .main-container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            animation: fadeIn 0.6s ease;
         }
 
         .header {
             background: var(--bg-card);
-            padding: 25px 35px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            margin-bottom: 25px;
-            transition: transform 0.3s ease;
-        }
-
-        .header:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
 
         .user-section {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             padding-bottom: 15px;
             border-bottom: 2px solid var(--border);
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .user-avatar {
-            width: 55px;
-            height: 55px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid var(--primary);
-            transition: transform 0.3s ease;
-        }
-
-        .user-avatar:hover {
-            transform: scale(1.1) rotate(5deg);
+            border: 2px solid var(--primary);
         }
 
         .user-name {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
         }
 
         .login-btn, .logout-btn {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 10px 20px;
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
-            font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .login-btn:hover, .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            background: var(--primary-dark);
         }
 
-        .theme-selector {
+        .theme-toggle {
             display: flex;
-            gap: 8px;
             align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .theme-btn {
-            padding: 8px 16px;
-            border: 2px solid var(--border);
-            background: var(--bg-card);
-            border-radius: 8px;
+            gap: 10px;
             cursor: pointer;
-            font-size: 12px;
+            padding: 8px 15px;
+            background: var(--bg-main);
+            border-radius: 8px;
             transition: all 0.3s ease;
         }
 
-        .theme-btn:hover {
-            transform: translateY(-2px);
-            border-color: var(--primary);
-        }
-
-        .theme-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        .theme-toggle:hover {
+            background: var(--border);
         }
 
         .header h1 {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 36px;
+            color: var(--primary);
+            font-size: 28px;
             margin-bottom: 15px;
-            font-weight: 700;
         }
 
         .stats-bar {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
         .stat-card {
-            flex: 1;
-            min-width: 150px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-            padding: 15px;
-            border-radius: 12px;
+            background: var(--bg-main);
+            padding: 12px;
+            border-radius: 8px;
             text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
 
         .stat-number {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             color: var(--primary);
-            margin-bottom: 5px;
         }
 
         .stat-label {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-top: 4px;
         }
 
-        .search-section {
+        .search-wrapper {
+            position: relative;
             margin-bottom: 15px;
         }
 
         .search-input {
             width: 100%;
-            padding: 12px 20px 12px 45px;
+            padding: 12px 15px 12px 40px;
             font-size: 15px;
             border: 2px solid var(--border);
-            border-radius: 10px;
+            border-radius: 8px;
             outline: none;
             background: var(--bg-card);
             color: var(--text-main);
-            transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .search-icon {
             position: absolute;
-            left: 15px;
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-secondary);
-            font-size: 18px;
-        }
-
-        .search-wrapper {
-            position: relative;
         }
 
         .new-list-section {
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .new-list-input {
             flex: 1;
             min-width: 200px;
-            padding: 14px 18px;
-            font-size: 16px;
+            padding: 12px 15px;
+            font-size: 15px;
             border: 2px solid var(--border);
-            border-radius: 10px;
+            border-radius: 8px;
             outline: none;
             background: var(--bg-card);
             color: var(--text-main);
-            transition: all 0.3s ease;
-        }
-
-        .new-list-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .share-toggle {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 18px;
-            background: rgba(0,0,0,0.05);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .share-toggle:hover {
-            background: rgba(0,0,0,0.08);
         }
 
         .new-list-btn {
-            padding: 14px 30px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 12px 25px;
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .new-list-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            white-space: nowrap;
         }
 
         .lists-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
         }
 
         .list-card {
             background: var(--bg-card);
-            border-radius: 20px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-            padding: 28px;
-            position: relative;
-            transition: all 0.3s ease;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .list-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
         }
 
         .list-card.shared {
-            border: 3px solid var(--success);
+            border: 2px solid var(--success);
         }
 
         .list-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            gap: 10px;
         }
 
         .list-title-edit {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
             border: none;
             background: transparent;
             flex: 1;
-            padding: 8px;
+            padding: 5px;
             color: var(--text-main);
-            border-radius: 8px;
-            transition: all 0.3s ease;
+            border-radius: 6px;
         }
 
         .list-title-edit:focus {
-            outline: none;
-            background: rgba(102, 126, 234, 0.05);
+            outline: 2px solid var(--primary);
         }
 
         .delete-list-btn {
-            padding: 8px 12px;
+            padding: 6px 10px;
             background: var(--danger);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 18px;
-            transition: all 0.3s ease;
-            opacity: 0.7;
-        }
-
-        .delete-list-btn:hover {
-            opacity: 1;
-            transform: scale(1.1);
+            font-size: 16px;
         }
 
         .task-input-section {
             display: flex;
+            flex-direction: column;
             gap: 8px;
-            margin: 15px 0;
+            margin: 12px 0;
+        }
+
+        .task-input-row {
+            display: flex;
+            gap: 8px;
         }
 
         .task-input {
             flex: 1;
-            padding: 12px 15px;
+            padding: 10px 12px;
             border: 2px solid var(--border);
-            border-radius: 10px;
+            border-radius: 8px;
             background: var(--bg-card);
             color: var(--text-main);
-            transition: all 0.3s ease;
+            font-size: 14px;
         }
 
-        .task-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        .deadline-input {
+            padding: 10px 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-main);
+            font-size: 13px;
+            cursor: pointer;
         }
 
         .add-task-btn {
-            padding: 12px 20px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 10px 15px;
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 18px;
-            transition: all 0.3s ease;
-        }
-
-        .add-task-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            white-space: nowrap;
         }
 
         .tasks-list {
             list-style: none;
-            max-height: 550px;
+            max-height: 500px;
             overflow-y: auto;
-            padding-right: 5px;
-        }
-
-        .tasks-list::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .tasks-list::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.05);
-            border-radius: 10px;
-        }
-
-        .tasks-list::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
         }
 
         .task-item {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            margin-bottom: 10px;
-            background: rgba(0,0,0,0.03);
-            border-radius: 10px;
-            cursor: pointer;
-            gap: 12px;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-
-        .task-item:hover {
-            background: rgba(102, 126, 234, 0.08);
-            transform: translateX(5px);
+            background: var(--bg-main);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-left: 3px solid transparent;
         }
 
         .task-item.completed {
             opacity: 0.6;
         }
 
-        .task-item.priority-low {
-            border-left-color: #6c757d;
-        }
+        .task-item.priority-low { border-left-color: #6c757d; }
+        .task-item.priority-medium { border-left-color: #ffc107; }
+        .task-item.priority-high { border-left-color: #ff6b35; }
+        .task-item.priority-critical { border-left-color: #dc3545; }
 
-        .task-item.priority-medium {
-            border-left-color: #ffc107;
-        }
-
-        .task-item.priority-high {
-            border-left-color: #ff6b35;
-        }
-
-        .task-item.priority-critical {
-            border-left-color: #dc3545;
-            background: rgba(220, 53, 69, 0.05);
+        .task-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 8px;
         }
 
         .star-btn {
-            font-size: 18px;
+            font-size: 16px;
             cursor: pointer;
-            transition: all 0.3s ease;
             color: #ddd;
         }
 
         .star-btn.starred {
             color: #ffc107;
-            transform: scale(1.2);
-        }
-
-        .star-btn:hover {
-            transform: scale(1.3);
         }
 
         .checkbox {
-            width: 22px;
-            height: 22px;
-            min-width: 22px;
-            border: 3px solid var(--primary);
-            border-radius: 6px;
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            border: 2px solid var(--primary);
+            border-radius: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .checkbox:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+            cursor: pointer;
+            margin-top: 2px;
         }
 
         .task-item.completed .checkbox {
@@ -523,26 +353,44 @@
             content: '✓';
             color: white;
             font-weight: bold;
-            font-size: 14px;
         }
 
-        .task-text {
+        .task-content {
             flex: 1;
-            font-size: 15px;
-            line-height: 1.5;
+            min-width: 0;
         }
 
-        .task-item.completed .task-text {
+        .task-text-edit {
+            width: 100%;
+            font-size: 14px;
+            padding: 4px;
+            border: none;
+            background: transparent;
+            color: var(--text-main);
+            border-radius: 4px;
+            word-wrap: break-word;
+        }
+
+        .task-text-edit:focus {
+            outline: 2px solid var(--primary);
+            background: var(--bg-card);
+        }
+
+        .task-item.completed .task-text-edit {
             text-decoration: line-through;
             color: var(--text-secondary);
         }
 
-        .task-deadline {
-            font-size: 11px;
-            color: var(--text-secondary);
+        .task-meta {
             display: flex;
-            align-items: center;
-            gap: 4px;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 12px;
+        }
+
+        .task-deadline {
+            color: var(--text-secondary);
         }
 
         .task-deadline.overdue {
@@ -550,45 +398,31 @@
             font-weight: 600;
         }
 
+        .task-file {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
         .task-actions {
             display: flex;
-            gap: 8px;
-            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
         }
 
-        .priority-select {
-            padding: 5px 10px;
-            border-radius: 6px;
+        .priority-select, .status-select {
+            padding: 4px 8px;
+            border-radius: 5px;
             font-size: 11px;
             border: 1px solid var(--border);
-            background: var(--bg-card);
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .priority-select:hover {
-            transform: scale(1.05);
         }
 
         .priority-low { background: #6c757d; color: white; }
         .priority-medium { background: #ffc107; color: black; }
         .priority-high { background: #ff6b35; color: white; }
         .priority-critical { background: #dc3545; color: white; }
-
-        .status-select {
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            border: 1px solid var(--border);
-            background: var(--bg-card);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .status-select:hover {
-            transform: scale(1.05);
-        }
 
         .status-backlog { background: #6c757d; color: white; }
         .status-todo { background: #007bff; color: white; }
@@ -597,91 +431,93 @@
         .status-done { background: #28a745; color: white; }
         .status-hold { background: #dc3545; color: white; }
 
+        .file-input-label {
+            padding: 4px 10px;
+            background: var(--primary);
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+            display: inline-block;
+        }
+
+        .file-input {
+            display: none;
+        }
+
         .delete-task-btn {
+            padding: 4px 10px;
             background: var(--danger);
             color: white;
             border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            opacity: 0.7;
-        }
-
-        .delete-task-btn:hover {
-            opacity: 1;
-            transform: scale(1.1);
+            font-size: 11px;
         }
 
         .share-section {
-            margin-top: 20px;
-            padding-top: 20px;
+            margin-top: 15px;
+            padding-top: 15px;
             border-top: 2px solid var(--border);
         }
 
         .share-input-group {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             margin-bottom: 10px;
+            flex-wrap: wrap;
         }
 
         .share-email-input {
             flex: 1;
-            padding: 10px;
+            min-width: 150px;
+            padding: 8px;
             border: 2px solid var(--border);
-            border-radius: 8px;
+            border-radius: 6px;
             background: var(--bg-card);
             color: var(--text-main);
+            font-size: 13px;
         }
 
         .permission-select {
-            padding: 10px;
+            padding: 8px;
             border: 2px solid var(--border);
-            border-radius: 8px;
+            border-radius: 6px;
             background: var(--bg-card);
             color: var(--text-main);
+            font-size: 13px;
         }
 
         .share-btn {
-            padding: 10px 18px;
+            padding: 8px 16px;
             background: var(--success);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .share-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+            font-size: 13px;
+            white-space: nowrap;
         }
 
         .shared-users {
-            margin-top: 12px;
+            margin-top: 10px;
         }
 
         .shared-user-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            background: rgba(0,0,0,0.03);
-            border-radius: 8px;
-            margin-bottom: 6px;
-            font-size: 13px;
-            transition: all 0.3s ease;
-        }
-
-        .shared-user-item:hover {
-            background: rgba(0,0,0,0.06);
+            padding: 8px;
+            background: var(--bg-main);
+            border-radius: 6px;
+            margin-bottom: 5px;
+            font-size: 12px;
         }
 
         .permission-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 10px;
             font-weight: 600;
         }
 
@@ -691,43 +527,76 @@
 
         .no-lists {
             text-align: center;
-            padding: 80px 20px;
-            color: var(--text-main);
-            font-size: 18px;
-            animation: fadeIn 0.8s ease;
+            padding: 60px 20px;
+            color: var(--text-secondary);
         }
 
-        .no-lists-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
+        .sync-notice {
+            background: var(--warning);
+            color: #000;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            display: none;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .deadline-input {
-            padding: 8px;
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
+        /* Mobile optimizations */
         @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+
+            .header {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
             .lists-container {
                 grid-template-columns: 1fr;
             }
-            
-            .theme-selector {
+
+            .user-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .theme-toggle {
                 width: 100%;
                 justify-content: center;
             }
-            
+
             .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .task-actions {
+                width: 100%;
+            }
+
+            .priority-select, .status-select {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .new-list-section {
                 flex-direction: column;
+            }
+
+            .new-list-input {
+                width: 100%;
+            }
+
+            .new-list-btn {
+                width: 100%;
             }
         }
     </style>
@@ -737,24 +606,24 @@
         <div class="header">
             <div class="user-section">
                 <div class="user-info" id="userInfo">
-                    <button class="login-btn" id="loginBtn">🔐 Google orqali kirish</button>
+                    <button class="login-btn" id="loginBtn">Google orqali kirish</button>
                 </div>
-                <div class="theme-selector">
-                    <span style="font-size: 13px; margin-right: 5px;">🎨 Tema:</span>
-                    <button class="theme-btn active" data-theme="light">☀️ Kungi</button>
-                    <button class="theme-btn" data-theme="dark">🌙 Tungi</button>
-                    <button class="theme-btn" data-theme="custom">💖 Maxsus</button>
-                    <button class="theme-btn" data-theme="ocean">🌊 Okean</button>
-                    <button class="theme-btn" data-theme="sunset">🌅 Quyosh</button>
+                <div class="theme-toggle" onclick="toggleTheme()">
+                    <span id="themeIcon">🌙</span>
+                    <span id="themeText">Qorong'i rejim</span>
                 </div>
             </div>
 
-            <h1>📋 Vazifalar Boshqaruvi Pro</h1>
+            <div class="sync-notice" id="syncNotice">
+                ⚠️ Siz offline rejimda ishlayapsiz. Ma'lumotlar faqat shu qurilmada saqlanadi. Google orqali kiring va ma'lumotlaringiz bulutda saqlansin.
+            </div>
 
-            <div class="stats-bar" id="statsBar" style="display: none;">
+            <h1>📋 Vazifalar Boshqaruvi</h1>
+
+            <div class="stats-bar">
                 <div class="stat-card">
                     <div class="stat-number" id="totalTasks">0</div>
-                    <div class="stat-label">Jami vazifalar</div>
+                    <div class="stat-label">Jami</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number" id="completedTasks">0</div>
@@ -766,30 +635,24 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-number" id="completionRate">0%</div>
-                    <div class="stat-label">Samaradorlik</div>
+                    <div class="stat-label">Foiz</div>
                 </div>
             </div>
 
-            <div class="search-section" style="display: none;" id="searchSection">
-                <div class="search-wrapper">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" id="searchInput" class="search-input" placeholder="Vazifalarni qidirish...">
-                </div>
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" class="search-input" placeholder="Vazifalarni qidirish...">
             </div>
             
             <div class="new-list-section">
                 <input type="text" id="newListInput" class="new-list-input" placeholder="Yangi ro'yxat nomi...">
-                <div class="share-toggle">
-                    <input type="checkbox" id="shareCheckbox">
-                    <label for="shareCheckbox">🌐 Umumiy</label>
-                </div>
-                <button id="newListBtn" class="new-list-btn">✨ Yaratish</button>
+                <button id="newListBtn" class="new-list-btn">+ Yaratish</button>
             </div>
         </div>
 
         <div id="listsContainer" class="lists-container"></div>
         <div id="noLists" class="no-lists" style="display: none;">
-            <div class="no-lists-icon">📝</div>
+            <div style="font-size: 60px; margin-bottom: 15px;">📝</div>
             <p>Hozircha ro'yxatlar yo'q. Yuqorida yangi ro'yxat yarating!</p>
         </div>
     </div>
@@ -798,6 +661,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-database-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-auth-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-storage-compat.min.js"></script>
 
     <script>
         // Firebase Config
@@ -815,31 +679,27 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const auth = firebase.auth();
+        const storage = firebase.storage();
         const provider = new firebase.auth.GoogleAuthProvider();
 
         let currentUser = null;
         let lists = [];
         let searchQuery = '';
+        let isOnlineMode = false;
 
-        // Tema o'zgartirish
-        document.querySelectorAll('.theme-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const theme = btn.dataset.theme;
-                document.body.setAttribute('data-theme', theme);
-                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                localStorage.setItem('theme', theme);
-            });
-        });
+        // Tema
+        function toggleTheme() {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', newTheme);
+            document.getElementById('themeIcon').textContent = newTheme === 'light' ? '🌙' : '☀️';
+            document.getElementById('themeText').textContent = newTheme === 'light' ? 'Qorong\'i rejim' : 'Yorug\' rejim';
+            localStorage.setItem('theme', newTheme);
+        }
 
         const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            document.body.setAttribute('data-theme', savedTheme);
-            const themeBtn = document.querySelector(`[data-theme="${savedTheme}"]`);
-            if (themeBtn) {
-                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-                themeBtn.classList.add('active');
-            }
+        if (savedTheme === 'dark') {
+            toggleTheme();
         }
 
         // Qidiruv
@@ -859,13 +719,16 @@
         auth.onAuthStateChanged(user => {
             currentUser = user;
             updateUserUI();
+            
             if (user) {
+                isOnlineMode = true;
+                document.getElementById('syncNotice').style.display = 'none';
+                syncLocalToFirebase();
                 loadLists();
-                document.getElementById('searchSection').style.display = 'block';
-                document.getElementById('statsBar').style.display = 'flex';
             } else {
-                document.getElementById('searchSection').style.display = 'none';
-                document.getElementById('statsBar').style.display = 'none';
+                isOnlineMode = false;
+                document.getElementById('syncNotice').style.display = 'block';
+                loadLocalLists();
             }
         });
 
@@ -876,17 +739,51 @@
                     <img src="${currentUser.photoURL}" class="user-avatar" alt="Avatar">
                     <div>
                         <div class="user-name">${currentUser.displayName}</div>
-                        <div style="font-size: 12px; color: var(--text-secondary)">${currentUser.email}</div>
+                        <div style="font-size: 11px; color: var(--text-secondary)">${currentUser.email}</div>
                     </div>
-                    <button class="logout-btn" onclick="logout()">🚪 Chiqish</button>
+                    <button class="logout-btn" onclick="logout()">Chiqish</button>
                 `;
             }
         }
 
         function logout() {
-            auth.signOut();
-            lists = [];
+            if (confirm('Chiqishdan oldin ma\'lumotlaringiz saqlanganligiga ishonchingiz komilmi?')) {
+                auth.signOut();
+                lists = [];
+                renderLists();
+            }
+        }
+
+        // Local Storage funksiyalari
+        function saveToLocal() {
+            localStorage.setItem('localLists', JSON.stringify(lists));
+        }
+
+        function loadLocalLists() {
+            const saved = localStorage.getItem('localLists');
+            lists = saved ? JSON.parse(saved) : [];
+            updateStats();
             renderLists();
+        }
+
+        function syncLocalToFirebase() {
+            const localData = localStorage.getItem('localLists');
+            if (localData && currentUser) {
+                const localLists = JSON.parse(localData);
+                if (localLists.length > 0) {
+                    if (confirm('Sizda offline ma\'lumotlar bor. Ularni bulutga yuklashni xohlaysizmi?')) {
+                        localLists.forEach(list => {
+                            database.ref(`users/${currentUser.uid}/lists`).push({
+                                ...list,
+                                owner: currentUser.uid,
+                                ownerName: currentUser.displayName,
+                                createdAt: Date.now()
+                            });
+                        });
+                        localStorage.removeItem('localLists');
+                    }
+                }
+            }
         }
 
         function loadLists() {
@@ -977,8 +874,8 @@
             card.className = `list-card ${list.isShared ? 'shared' : ''}`;
 
             const permission = getPermission(list);
-            const canEdit = permission === 'creator';
-            const canCheck = permission !== 'viewer';
+            const canEdit = permission === 'creator' || !isOnlineMode;
+            const canCheck = permission !== 'viewer' || !isOnlineMode;
 
             const sortedTasks = (list.tasks || []).sort((a, b) => {
                 if (a.starred !== b.starred) return a.starred ? -1 : 1;
@@ -991,27 +888,29 @@
                     <input type="text" class="list-title-edit" value="${list.title}" 
                         ${canEdit ? '' : 'readonly'} 
                         onblur="updateListTitle('${list.id}', this.value, ${list.isShared})">
-                    ${canEdit ? `<button class="delete-list-btn" onclick="deleteList('${list.id}', ${list.isShared})" title="Ro'yxatni o'chirish">🗑️</button>` : ''}
+                    ${canEdit ? `<button class="delete-list-btn" onclick="deleteList('${list.id}', ${list.isShared})">🗑️</button>` : ''}
                 </div>
                 
                 ${canEdit ? `
                 <div class="task-input-section">
-                    <input type="text" class="task-input" id="taskInput${list.id}" placeholder="Yangi vazifa...">
-                    <input type="date" class="deadline-input" id="deadlineInput${list.id}">
-                    <button class="add-task-btn" onclick="addTask('${list.id}', ${list.isShared})">➕</button>
+                    <div class="task-input-row">
+                        <input type="text" class="task-input" id="taskInput${list.id}" placeholder="Yangi vazifa...">
+                        <input type="date" class="deadline-input" id="deadlineInput${list.id}">
+                    </div>
+                    <button class="add-task-btn" onclick="addTask('${list.id}', ${list.isShared})">+ Qo'shish</button>
                 </div>` : ''}
                 
                 <ul class="tasks-list" id="tasksList${list.id}"></ul>
                 
-                ${canEdit && list.isShared ? `
+                ${canEdit && list.isShared && isOnlineMode ? `
                 <div class="share-section">
                     <strong>👥 Ulashish:</strong>
                     <div class="share-input-group">
-                        <input type="email" class="share-email-input" id="shareEmail${list.id}" placeholder="Email manzil">
+                        <input type="email" class="share-email-input" id="shareEmail${list.id}" placeholder="Email">
                         <select class="permission-select" id="sharePerm${list.id}">
-                            <option value="viewer">👁️ Kuzatuvchi</option>
-                            <option value="executor">✅ Bajaruvchi</option>
-                            <option value="creator">👑 Yaratuvchi</option>
+                            <option value="viewer">Kuzatuvchi</option>
+                            <option value="executor">Bajaruvchi</option>
+                            <option value="creator">Yaratuvchi</option>
                         </select>
                         <button class="share-btn" onclick="shareList('${list.id}')">Ulashish</button>
                     </div>
@@ -1043,11 +942,18 @@
             const isOverdue = deadline && deadline < now && !task.completed;
 
             li.innerHTML = `
-                ${canEdit ? `<span class="star-btn ${task.starred ? 'starred' : ''}" onclick="toggleStar('${listId}', ${index}, ${isShared})">⭐</span>` : ''}
-                <div class="checkbox" ${canCheck ? `onclick="toggleTask('${listId}', ${index}, ${isShared})"` : ''}></div>
-                <div style="flex: 1;">
-                    <span class="task-text">${task.text}</span>
-                    ${task.deadline ? `<div class="task-deadline ${isOverdue ? 'overdue' : ''}">📅 ${formatDate(task.deadline)} ${isOverdue ? '⚠️ Muddati o\'tgan!' : ''}</div>` : ''}
+                <div class="task-header">
+                    ${canEdit ? `<span class="star-btn ${task.starred ? 'starred' : ''}" onclick="toggleStar('${listId}', ${index}, ${isShared})">⭐</span>` : ''}
+                    <div class="checkbox" ${canCheck ? `onclick="toggleTask('${listId}', ${index}, ${isShared})"` : ''}></div>
+                    <div class="task-content">
+                        <input type="text" class="task-text-edit" value="${task.text}" 
+                            ${canEdit ? '' : 'readonly'}
+                            onblur="updateTaskText('${listId}', ${index}, this.value, ${isShared})">
+                        <div class="task-meta">
+                            ${task.deadline ? `<span class="task-deadline ${isOverdue ? 'overdue' : ''}">📅 ${formatDate(task.deadline)} ${isOverdue ? '⚠️' : ''}</span>` : ''}
+                            ${task.fileName ? `<a href="${task.fileUrl}" class="task-file" target="_blank" download="${task.fileName}">📎 ${task.fileName}</a>` : ''}
+                        </div>
+                    </div>
                 </div>
                 <div class="task-actions">
                     ${canEdit ? `
@@ -1056,7 +962,7 @@
                         <option value="low" ${task.priority === 'low' ? 'selected' : ''}>Past</option>
                         <option value="medium" ${!task.priority || task.priority === 'medium' ? 'selected' : ''}>O'rta</option>
                         <option value="high" ${task.priority === 'high' ? 'selected' : ''}>Yuqori</option>
-                        <option value="critical" ${task.priority === 'critical' ? 'selected' : ''}>Juda muhim</option>
+                        <option value="critical" ${task.priority === 'critical' ? 'selected' : ''}>Kritik</option>
                     </select>
                     ` : ''}
                     <select class="status-select status-${task.status || 'todo'}" 
@@ -1067,9 +973,14 @@
                         <option value="progress" ${task.status === 'progress' ? 'selected' : ''}>In Progress</option>
                         <option value="review" ${task.status === 'review' ? 'selected' : ''}>Review</option>
                         <option value="done" ${task.status === 'done' ? 'selected' : ''}>Done</option>
-                        <option value="hold" ${task.status === 'hold' ? 'selected' : ''}>On Hold</option>
                     </select>
-                    ${canEdit ? `<button class="delete-task-btn" onclick="deleteTask('${listId}', ${index}, ${isShared})">🗑️</button>` : ''}
+                    ${canEdit ? `
+                    <label class="file-input-label">
+                        📎 Fayl
+                        <input type="file" class="file-input" onchange="uploadFile('${listId}', ${index}, this, ${isShared})">
+                    </label>
+                    <button class="delete-task-btn" onclick="deleteTask('${listId}', ${index}, ${isShared})">🗑️</button>
+                    ` : ''}
                 </div>
             `;
 
@@ -1079,19 +990,21 @@
         function formatDate(dateString) {
             const date = new Date(dateString);
             const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
+            today.setHours(0, 0, 0, 0);
+            const taskDate = new Date(date);
+            taskDate.setHours(0, 0, 0, 0);
 
-            if (date.toDateString() === today.toDateString()) {
-                return 'Bugun';
-            } else if (date.toDateString() === tomorrow.toDateString()) {
-                return 'Ertaga';
-            } else {
-                return date.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short' });
-            }
+            const diff = (taskDate - today) / (1000 * 60 * 60 * 24);
+
+            if (diff === 0) return 'Bugun';
+            if (diff === 1) return 'Ertaga';
+            if (diff === -1) return 'Kecha';
+            
+            return date.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short' });
         }
 
         function getPermission(list) {
+            if (!isOnlineMode) return 'creator';
             if (!currentUser) return 'viewer';
             if (list.owner === currentUser.uid) return 'creator';
             if (list.sharedWith && list.sharedWith[currentUser.email]) {
@@ -1100,49 +1013,68 @@
             return 'viewer';
         }
 
+        function saveData(listId, isShared) {
+            if (isOnlineMode) {
+                const list = lists.find(l => l.id === listId);
+                const path = isShared ? `sharedLists/${listId}` : `users/${currentUser.uid}/lists/${listId}`;
+                database.ref(path).set(list);
+            } else {
+                saveToLocal();
+            }
+            updateStats();
+        }
+
         function updateListTitle(listId, newTitle, isShared) {
             if (!newTitle.trim()) return;
             
-            const path = isShared ? `sharedLists/${listId}/title` : `users/${currentUser.uid}/lists/${listId}/title`;
-            database.ref(path).set(newTitle.trim());
+            const list = lists.find(l => l.id === listId);
+            list.title = newTitle.trim();
+            
+            if (isOnlineMode) {
+                const path = isShared ? `sharedLists/${listId}/title` : `users/${currentUser.uid}/lists/${listId}/title`;
+                database.ref(path).set(newTitle.trim());
+            } else {
+                saveToLocal();
+            }
         }
 
         function deleteList(listId, isShared) {
             if (!confirm('Rostdan ham bu ro\'yxatni o\'chirmoqchimisiz?')) return;
             
-            const path = isShared ? `sharedLists/${listId}` : `users/${currentUser.uid}/lists/${listId}`;
-            database.ref(path).remove();
+            if (isOnlineMode) {
+                const path = isShared ? `sharedLists/${listId}` : `users/${currentUser.uid}/lists/${listId}`;
+                database.ref(path).remove();
+            } else {
+                lists = lists.filter(l => l.id !== listId);
+                saveToLocal();
+                renderLists();
+            }
         }
 
         function createList() {
-            if (!currentUser) {
-                alert('Iltimos, avval tizimga kiring!');
-                return;
-            }
-
             const input = document.getElementById('newListInput');
             const title = input.value.trim();
-            const isShared = document.getElementById('shareCheckbox').checked;
 
             if (!title) return;
 
             const newList = {
+                id: 'list_' + Date.now(),
                 title,
                 tasks: [],
-                owner: currentUser.uid,
-                ownerName: currentUser.displayName,
                 createdAt: Date.now()
             };
 
-            if (isShared) {
-                newList.sharedWith = {};
-                database.ref('sharedLists').push(newList);
-            } else {
+            if (isOnlineMode) {
+                newList.owner = currentUser.uid;
+                newList.ownerName = currentUser.displayName;
                 database.ref(`users/${currentUser.uid}/lists`).push(newList);
+            } else {
+                lists.push(newList);
+                saveToLocal();
+                renderLists();
             }
 
             input.value = '';
-            document.getElementById('shareCheckbox').checked = false;
         }
 
         function addTask(listId, isShared) {
@@ -1152,7 +1084,7 @@
             if (!text) return;
 
             const list = lists.find(l => l.id === listId);
-            const tasks = list.tasks || [];
+            if (!list.tasks) list.tasks = [];
             
             const newTask = {
                 text,
@@ -1160,69 +1092,101 @@
                 status: 'todo',
                 priority: 'medium',
                 starred: false,
-                createdBy: currentUser.uid,
-                assignedTo: currentUser.uid,
                 createdAt: Date.now()
             };
+
+            if (isOnlineMode) {
+                newTask.createdBy = currentUser.uid;
+            }
 
             if (deadlineInput.value) {
                 newTask.deadline = deadlineInput.value;
             }
 
-            tasks.push(newTask);
-
-            const path = isShared ? `sharedLists/${listId}/tasks` : `users/${currentUser.uid}/lists/${listId}/tasks`;
-            database.ref(path).set(tasks);
+            list.tasks.push(newTask);
+            saveData(listId, isShared);
             
             input.value = '';
             deadlineInput.value = '';
+            renderLists();
+        }
+
+        function updateTaskText(listId, index, newText, isShared) {
+            if (!newText.trim()) return;
+            
+            const list = lists.find(l => l.id === listId);
+            list.tasks[index].text = newText.trim();
+            saveData(listId, isShared);
         }
 
         function toggleTask(listId, index, isShared) {
             const list = lists.find(l => l.id === listId);
-            const tasks = list.tasks;
-            tasks[index].completed = !tasks[index].completed;
-
-            const path = isShared ? `sharedLists/${listId}/tasks` : `users/${currentUser.uid}/lists/${listId}/tasks`;
-            database.ref(path).set(tasks);
+            list.tasks[index].completed = !list.tasks[index].completed;
+            saveData(listId, isShared);
+            renderLists();
         }
 
         function toggleStar(listId, index, isShared) {
             const list = lists.find(l => l.id === listId);
-            const tasks = list.tasks;
-            tasks[index].starred = !tasks[index].starred;
-
-            const path = isShared ? `sharedLists/${listId}/tasks` : `users/${currentUser.uid}/lists/${listId}/tasks`;
-            database.ref(path).set(tasks);
+            list.tasks[index].starred = !list.tasks[index].starred;
+            saveData(listId, isShared);
+            renderLists();
         }
 
         function updateTaskStatus(listId, index, status, isShared) {
             const list = lists.find(l => l.id === listId);
-            const tasks = list.tasks;
-            tasks[index].status = status;
-
-            const path = isShared ? `sharedLists/${listId}/tasks` : `users/${currentUser.uid}/lists/${listId}/tasks`;
-            database.ref(path).set(tasks);
+            list.tasks[index].status = status;
+            saveData(listId, isShared);
         }
 
         function updateTaskPriority(listId, index, priority, isShared) {
             const list = lists.find(l => l.id === listId);
-            const tasks = list.tasks;
-            tasks[index].priority = priority;
+            list.tasks[index].priority = priority;
+            saveData(listId, isShared);
+            renderLists();
+        }
 
-            const path = isShared ? `sharedLists/${listId}/tasks` : `users/${currentUser.uid}/lists/${listId}/tasks`;
-            database.ref(path).set(tasks);
+        function uploadFile(listId, index, input, isShared) {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (file.size > 10 * 1024 * 1024) {
+                alert('Fayl hajmi 10MB dan kichik bo\'lishi kerak!');
+                return;
+            }
+
+            const list = lists.find(l => l.id === listId);
+            
+            if (isOnlineMode) {
+                const storageRef = storage.ref(`files/${currentUser.uid}/${Date.now()}_${file.name}`);
+                storageRef.put(file).then(snapshot => {
+                    snapshot.ref.getDownloadURL().then(url => {
+                        list.tasks[index].fileUrl = url;
+                        list.tasks[index].fileName = file.name;
+                        saveData(listId, isShared);
+                        renderLists();
+                    });
+                });
+            } else {
+                // Offline mode - base64
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    list.tasks[index].fileUrl = e.target.result;
+                    list.tasks[index].fileName = file.name;
+                    saveToLocal();
+                    renderLists();
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
         function deleteTask(listId, index, isShared) {
             if (!confirm('Bu vazifani o\'chirmoqchimisiz?')) return;
             
             const list = lists.find(l => l.id === listId);
-            const tasks = list.tasks;
-            tasks.splice(index, 1);
-
-            const path = isShared ? `sharedLists/${listId}/tasks` : `users/${currentUser.uid}/lists/${listId}/tasks`;
-            database.ref(path).set(tasks);
+            list.tasks.splice(index, 1);
+            saveData(listId, isShared);
+            renderLists();
         }
 
         function shareList(listId) {
@@ -1247,7 +1211,7 @@
                 div.innerHTML = `
                     <span>${email.replace(/_/g, '.')}</span>
                     <span class="permission-badge perm-${perm}">
-                        ${perm === 'viewer' ? '👁️ Kuzatuvchi' : perm === 'executor' ? '✅ Bajaruvchi' : '👑 Yaratuvchi'}
+                        ${perm === 'viewer' ? 'Kuzatuvchi' : perm === 'executor' ? 'Bajaruvchi' : 'Yaratuvchi'}
                     </span>
                 `;
                 container.appendChild(div);
