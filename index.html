@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vazifalar Boshqaruvi</title>
+    <title>Vazifalar Boshqaruvi Pro</title>
     <style>
         :root {
             --primary: #667eea;
@@ -12,6 +12,7 @@
             --success: #28a745;
             --danger: #dc3545;
             --warning: #ffc107;
+            --info: #17a2b8;
             --bg-main: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --bg-card: #ffffff;
             --text-main: #333;
@@ -34,15 +35,47 @@
             --bg-card: #fff5f7;
         }
 
+        [data-theme="ocean"] {
+            --primary: #00d4ff;
+            --primary-dark: #00b8e6;
+            --bg-main: linear-gradient(135deg, #0093e9 0%, #80d0c7 100%);
+            --bg-card: #f0f9ff;
+        }
+
+        [data-theme="sunset"] {
+            --primary: #ff6b35;
+            --primary-dark: #f7931e;
+            --bg-main: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --bg-card: #fff8f0;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--bg-main);
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
             padding: 20px;
             color: var(--text-main);
@@ -51,14 +84,21 @@
         .main-container {
             max-width: 1400px;
             margin: 0 auto;
+            animation: fadeIn 0.6s ease;
         }
 
         .header {
             background: var(--bg-card);
-            padding: 20px 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+            padding: 25px 35px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            margin-bottom: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
         }
 
         .user-section {
@@ -77,10 +117,16 @@
         }
 
         .user-avatar {
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             object-fit: cover;
+            border: 3px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1) rotate(5deg);
         }
 
         .user-name {
@@ -89,46 +135,130 @@
         }
 
         .login-btn, .logout-btn {
-            padding: 10px 20px;
-            background: var(--primary);
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 14px;
-            transition: background 0.3s;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .login-btn:hover, .logout-btn:hover {
-            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
 
         .theme-selector {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .theme-btn {
             padding: 8px 16px;
             border: 2px solid var(--border);
             background: var(--bg-card);
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 13px;
-            transition: all 0.3s;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
         }
 
         .theme-btn.active {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
         .header h1 {
-            color: var(--primary);
-            font-size: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 36px;
             margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            flex: 1;
+            min-width: 150px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .search-section {
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            font-size: 15px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            background: var(--bg-card);
+            color: var(--text-main);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 18px;
+        }
+
+        .search-wrapper {
+            position: relative;
         }
 
         .new-list-section {
@@ -141,67 +271,117 @@
         .new-list-input {
             flex: 1;
             min-width: 200px;
-            padding: 12px 15px;
+            padding: 14px 18px;
             font-size: 16px;
             border: 2px solid var(--border);
-            border-radius: 8px;
+            border-radius: 10px;
             outline: none;
             background: var(--bg-card);
             color: var(--text-main);
+            transition: all 0.3s ease;
+        }
+
+        .new-list-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .share-toggle {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 15px;
+            padding: 10px 18px;
             background: rgba(0,0,0,0.05);
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .share-toggle:hover {
+            background: rgba(0,0,0,0.08);
         }
 
         .new-list-btn {
-            padding: 12px 25px;
-            background: var(--primary);
+            padding: 14px 30px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .new-list-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
 
         .lists-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+            gap: 25px;
         }
 
         .list-card {
             background: var(--bg-card);
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            padding: 28px;
             position: relative;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .list-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
         }
 
         .list-card.shared {
-            border: 2px solid var(--success);
+            border: 3px solid var(--success);
+        }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
         .list-title-edit {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: bold;
             border: none;
             background: transparent;
-            width: 100%;
-            padding: 5px;
-            margin-bottom: 10px;
+            flex: 1;
+            padding: 8px;
             color: var(--text-main);
+            border-radius: 8px;
+            transition: all 0.3s ease;
         }
 
         .list-title-edit:focus {
-            outline: 2px solid var(--primary);
-            border-radius: 4px;
+            outline: none;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .delete-list-btn {
+            padding: 8px 12px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .delete-list-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
         }
 
         .task-input-section {
@@ -212,52 +392,127 @@
 
         .task-input {
             flex: 1;
-            padding: 10px 12px;
+            padding: 12px 15px;
             border: 2px solid var(--border);
-            border-radius: 6px;
+            border-radius: 10px;
             background: var(--bg-card);
             color: var(--text-main);
+            transition: all 0.3s ease;
+        }
+
+        .task-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .add-task-btn {
-            padding: 10px 15px;
-            background: var(--primary);
+            padding: 12px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .add-task-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
         .tasks-list {
             list-style: none;
-            max-height: 500px;
+            max-height: 550px;
             overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .tasks-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .tasks-list::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+        }
+
+        .tasks-list::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
         }
 
         .task-item {
             display: flex;
             align-items: center;
-            padding: 12px;
-            margin-bottom: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
             background: rgba(0,0,0,0.03);
-            border-radius: 6px;
+            border-radius: 10px;
             cursor: pointer;
-            gap: 10px;
+            gap: 12px;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .task-item:hover {
+            background: rgba(102, 126, 234, 0.08);
+            transform: translateX(5px);
         }
 
         .task-item.completed {
             opacity: 0.6;
         }
 
+        .task-item.priority-low {
+            border-left-color: #6c757d;
+        }
+
+        .task-item.priority-medium {
+            border-left-color: #ffc107;
+        }
+
+        .task-item.priority-high {
+            border-left-color: #ff6b35;
+        }
+
+        .task-item.priority-critical {
+            border-left-color: #dc3545;
+            background: rgba(220, 53, 69, 0.05);
+        }
+
+        .star-btn {
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #ddd;
+        }
+
+        .star-btn.starred {
+            color: #ffc107;
+            transform: scale(1.2);
+        }
+
+        .star-btn:hover {
+            transform: scale(1.3);
+        }
+
         .checkbox {
-            width: 18px;
-            height: 18px;
-            min-width: 18px;
-            border: 2px solid var(--primary);
-            border-radius: 4px;
+            width: 22px;
+            height: 22px;
+            min-width: 22px;
+            border: 3px solid var(--primary);
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
         }
 
         .task-item.completed .checkbox {
@@ -268,12 +523,13 @@
             content: '✓';
             color: white;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 14px;
         }
 
         .task-text {
             flex: 1;
             font-size: 15px;
+            line-height: 1.5;
         }
 
         .task-item.completed .task-text {
@@ -281,13 +537,57 @@
             color: var(--text-secondary);
         }
 
-        .status-select {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
+        .task-deadline {
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .task-deadline.overdue {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .priority-select {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
             border: 1px solid var(--border);
             background: var(--bg-card);
             cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .priority-select:hover {
+            transform: scale(1.05);
+        }
+
+        .priority-low { background: #6c757d; color: white; }
+        .priority-medium { background: #ffc107; color: black; }
+        .priority-high { background: #ff6b35; color: white; }
+        .priority-critical { background: #dc3545; color: white; }
+
+        .status-select {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .status-select:hover {
+            transform: scale(1.05);
         }
 
         .status-backlog { background: #6c757d; color: white; }
@@ -301,15 +601,22 @@
             background: var(--danger);
             color: white;
             border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
+            padding: 6px 12px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .delete-task-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
         }
 
         .share-section {
-            margin-top: 15px;
-            padding-top: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
             border-top: 2px solid var(--border);
         }
 
@@ -321,47 +628,58 @@
 
         .share-email-input {
             flex: 1;
-            padding: 8px;
+            padding: 10px;
             border: 2px solid var(--border);
-            border-radius: 6px;
+            border-radius: 8px;
             background: var(--bg-card);
             color: var(--text-main);
         }
 
         .permission-select {
-            padding: 8px;
+            padding: 10px;
             border: 2px solid var(--border);
-            border-radius: 6px;
+            border-radius: 8px;
             background: var(--bg-card);
             color: var(--text-main);
         }
 
         .share-btn {
-            padding: 8px 16px;
+            padding: 10px 18px;
             background: var(--success);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .share-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
         }
 
         .shared-users {
-            margin-top: 10px;
+            margin-top: 12px;
         }
 
         .shared-user-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px;
+            padding: 10px;
             background: rgba(0,0,0,0.03);
-            border-radius: 4px;
-            margin-bottom: 5px;
+            border-radius: 8px;
+            margin-bottom: 6px;
             font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .shared-user-item:hover {
+            background: rgba(0,0,0,0.06);
         }
 
         .permission-badge {
-            padding: 3px 8px;
+            padding: 4px 10px;
             border-radius: 12px;
             font-size: 11px;
             font-weight: 600;
@@ -371,53 +689,45 @@
         .perm-executor { background: #ffc107; color: black; }
         .perm-creator { background: #28a745; color: white; }
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--bg-card);
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 400px;
-            width: 90%;
-        }
-
-        .status-tooltip {
-            position: absolute;
-            background: #333;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            z-index: 100;
-            display: none;
-            max-width: 200px;
-        }
-
         .no-lists {
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
             color: var(--text-main);
             font-size: 18px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .no-lists-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .deadline-input {
+            padding: 8px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
         }
 
         @media (max-width: 768px) {
             .lists-container {
                 grid-template-columns: 1fr;
+            }
+            
+            .theme-selector {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
             }
         }
     </style>
@@ -427,36 +737,62 @@
         <div class="header">
             <div class="user-section">
                 <div class="user-info" id="userInfo">
-                    <button class="login-btn" id="loginBtn">Google orqali kirish</button>
+                    <button class="login-btn" id="loginBtn">🔐 Google orqali kirish</button>
                 </div>
                 <div class="theme-selector">
-                    <span style="font-size: 13px; margin-right: 5px;">Tema:</span>
+                    <span style="font-size: 13px; margin-right: 5px;">🎨 Tema:</span>
                     <button class="theme-btn active" data-theme="light">☀️ Kungi</button>
                     <button class="theme-btn" data-theme="dark">🌙 Tungi</button>
-                    <button class="theme-btn" data-theme="custom">🎨 Maxsus</button>
+                    <button class="theme-btn" data-theme="custom">💖 Maxsus</button>
+                    <button class="theme-btn" data-theme="ocean">🌊 Okean</button>
+                    <button class="theme-btn" data-theme="sunset">🌅 Quyosh</button>
                 </div>
             </div>
 
-            <h1>📋 Vazifalar Boshqaruvi</h1>
+            <h1>📋 Vazifalar Boshqaruvi Pro</h1>
+
+            <div class="stats-bar" id="statsBar" style="display: none;">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTasks">0</div>
+                    <div class="stat-label">Jami vazifalar</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completedTasks">0</div>
+                    <div class="stat-label">Bajarilgan</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingTasks">0</div>
+                    <div class="stat-label">Kutilmoqda</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completionRate">0%</div>
+                    <div class="stat-label">Samaradorlik</div>
+                </div>
+            </div>
+
+            <div class="search-section" style="display: none;" id="searchSection">
+                <div class="search-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Vazifalarni qidirish...">
+                </div>
+            </div>
             
             <div class="new-list-section">
-                <input type="text" id="newListInput" class="new-list-input" placeholder="Yangi ro'yxat nomi">
+                <input type="text" id="newListInput" class="new-list-input" placeholder="Yangi ro'yxat nomi...">
                 <div class="share-toggle">
                     <input type="checkbox" id="shareCheckbox">
                     <label for="shareCheckbox">🌐 Umumiy</label>
                 </div>
-                <button id="newListBtn" class="new-list-btn">+ Yaratish</button>
+                <button id="newListBtn" class="new-list-btn">✨ Yaratish</button>
             </div>
         </div>
 
         <div id="listsContainer" class="lists-container"></div>
         <div id="noLists" class="no-lists" style="display: none;">
-            <div style="font-size: 60px; margin-bottom: 20px;">📝</div>
+            <div class="no-lists-icon">📝</div>
             <p>Hozircha ro'yxatlar yo'q. Yuqorida yangi ro'yxat yarating!</p>
         </div>
     </div>
-
-    <div class="status-tooltip" id="statusTooltip"></div>
 
     <!-- Firebase SDK -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-app-compat.min.js"></script>
@@ -466,15 +802,15 @@
     <script>
         // Firebase Config
         const firebaseConfig = {
-  apiKey: "AIzaSyCwtHihZq8qFRCaCs2tJBC16cPG-bUWho0",
-  authDomain: "checkbox-5b848.firebaseapp.com",
-  databaseURL: "https://checkbox-5b848-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "checkbox-5b848",
-  storageBucket: "checkbox-5b848.firebasestorage.app",
-  messagingSenderId: "461550771942",
-  appId: "1:461550771942:web:53def1224b2f8ded95e527",
-  measurementId: "G-1VHZ91HQ72"
-};
+            apiKey: "AIzaSyCwtHihZq8qFRCaCs2tJBC16cPG-bUWho0",
+            authDomain: "checkbox-5b848.firebaseapp.com",
+            databaseURL: "https://checkbox-5b848-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "checkbox-5b848",
+            storageBucket: "checkbox-5b848.firebasestorage.app",
+            messagingSenderId: "461550771942",
+            appId: "1:461550771942:web:53def1224b2f8ded95e527",
+            measurementId: "G-1VHZ91HQ72"
+        };
 
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
@@ -483,15 +819,7 @@
 
         let currentUser = null;
         let lists = [];
-
-        const statusDescriptions = {
-            'backlog': 'Rejalashtirilgan: Kelajakda bajarilishi kerak bo\'lgan vazifalar',
-            'todo': 'Bajarish kerak: Tez orada boshlanishi kerak',
-            'progress': 'Jarayonda: Hozir ustida ishlanmoqda',
-            'review': 'Tekshiruv: Yakunlangan, lekin tekshirish kerak',
-            'done': 'Bajarildi: To\'liq yakunlangan',
-            'hold': 'To\'xtatilgan: Vaqtincha to\'xtatilgan yoki arxivlangan'
-        };
+        let searchQuery = '';
 
         // Tema o'zgartirish
         document.querySelectorAll('.theme-btn').forEach(btn => {
@@ -507,9 +835,18 @@
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme) {
             document.body.setAttribute('data-theme', savedTheme);
-            document.querySelector(`[data-theme="${savedTheme}"]`).classList.add('active');
-            document.querySelector('[data-theme="light"]').classList.remove('active');
+            const themeBtn = document.querySelector(`[data-theme="${savedTheme}"]`);
+            if (themeBtn) {
+                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                themeBtn.classList.add('active');
+            }
         }
+
+        // Qidiruv
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchQuery = e.target.value.toLowerCase();
+            renderLists();
+        });
 
         // Google Authentication
         document.getElementById('loginBtn').addEventListener('click', () => {
@@ -524,6 +861,11 @@
             updateUserUI();
             if (user) {
                 loadLists();
+                document.getElementById('searchSection').style.display = 'block';
+                document.getElementById('statsBar').style.display = 'flex';
+            } else {
+                document.getElementById('searchSection').style.display = 'none';
+                document.getElementById('statsBar').style.display = 'none';
             }
         });
 
@@ -536,7 +878,7 @@
                         <div class="user-name">${currentUser.displayName}</div>
                         <div style="font-size: 12px; color: var(--text-secondary)">${currentUser.email}</div>
                     </div>
-                    <button class="logout-btn" onclick="logout()">Chiqish</button>
+                    <button class="logout-btn" onclick="logout()">🚪 Chiqish</button>
                 `;
             }
         }
@@ -550,7 +892,6 @@
         function loadLists() {
             if (!currentUser) return;
 
-            // Shaxsiy ro'yxatlar
             database.ref(`users/${currentUser.uid}/lists`).on('value', snapshot => {
                 const privateLists = [];
                 const data = snapshot.val();
@@ -560,7 +901,6 @@
                     });
                 }
                 
-                // Umumiy ro'yxatlar
                 database.ref('sharedLists').once('value', sharedSnapshot => {
                     const sharedLists = [];
                     const sharedData = sharedSnapshot.val();
@@ -575,16 +915,49 @@
                     }
                     
                     lists = [...privateLists, ...sharedLists];
+                    updateStats();
                     renderLists();
                 });
             });
+        }
+
+        function updateStats() {
+            let total = 0;
+            let completed = 0;
+
+            lists.forEach(list => {
+                if (list.tasks) {
+                    total += list.tasks.length;
+                    completed += list.tasks.filter(t => t.completed).length;
+                }
+            });
+
+            const pending = total - completed;
+            const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            document.getElementById('totalTasks').textContent = total;
+            document.getElementById('completedTasks').textContent = completed;
+            document.getElementById('pendingTasks').textContent = pending;
+            document.getElementById('completionRate').textContent = rate + '%';
         }
 
         function renderLists() {
             const container = document.getElementById('listsContainer');
             const noLists = document.getElementById('noLists');
 
-            if (lists.length === 0) {
+            let filteredLists = lists;
+            
+            if (searchQuery) {
+                filteredLists = lists.filter(list => {
+                    const titleMatch = list.title.toLowerCase().includes(searchQuery);
+                    const taskMatch = list.tasks && list.tasks.some(task => 
+                        task.text.toLowerCase().includes(searchQuery)
+                    );
+                    return titleMatch || taskMatch;
+                });
+            }
+
+            if (filteredLists.length === 0) {
                 container.innerHTML = '';
                 noLists.style.display = 'block';
                 return;
@@ -593,7 +966,7 @@
             noLists.style.display = 'none';
             container.innerHTML = '';
 
-            lists.forEach(list => {
+            filteredLists.forEach(list => {
                 const card = createListCard(list);
                 container.appendChild(card);
             });
@@ -607,34 +980,38 @@
             const canEdit = permission === 'creator';
             const canCheck = permission !== 'viewer';
 
-            // Vazifalarni sortlash: bajarilmaganlar yuqorida
             const sortedTasks = (list.tasks || []).sort((a, b) => {
+                if (a.starred !== b.starred) return a.starred ? -1 : 1;
                 if (a.completed === b.completed) return 0;
                 return a.completed ? 1 : -1;
             });
 
             card.innerHTML = `
-                <input type="text" class="list-title-edit" value="${list.title}" 
-                    ${canEdit ? '' : 'readonly'} 
-                    onblur="updateListTitle('${list.id}', this.value, ${list.isShared})">
+                <div class="list-header">
+                    <input type="text" class="list-title-edit" value="${list.title}" 
+                        ${canEdit ? '' : 'readonly'} 
+                        onblur="updateListTitle('${list.id}', this.value, ${list.isShared})">
+                    ${canEdit ? `<button class="delete-list-btn" onclick="deleteList('${list.id}', ${list.isShared})" title="Ro'yxatni o'chirish">🗑️</button>` : ''}
+                </div>
                 
                 ${canEdit ? `
                 <div class="task-input-section">
                     <input type="text" class="task-input" id="taskInput${list.id}" placeholder="Yangi vazifa...">
-                    <button class="add-task-btn" onclick="addTask('${list.id}', ${list.isShared})">+</button>
+                    <input type="date" class="deadline-input" id="deadlineInput${list.id}">
+                    <button class="add-task-btn" onclick="addTask('${list.id}', ${list.isShared})">➕</button>
                 </div>` : ''}
                 
                 <ul class="tasks-list" id="tasksList${list.id}"></ul>
                 
                 ${canEdit && list.isShared ? `
                 <div class="share-section">
-                    <strong>Ulashish:</strong>
+                    <strong>👥 Ulashish:</strong>
                     <div class="share-input-group">
                         <input type="email" class="share-email-input" id="shareEmail${list.id}" placeholder="Email manzil">
                         <select class="permission-select" id="sharePerm${list.id}">
-                            <option value="viewer">Kuzatuvchi</option>
-                            <option value="executor">Bajaruvchi</option>
-                            <option value="creator">Yaratuvchi</option>
+                            <option value="viewer">👁️ Kuzatuvchi</option>
+                            <option value="executor">✅ Bajaruvchi</option>
+                            <option value="creator">👑 Yaratuvchi</option>
                         </select>
                         <button class="share-btn" onclick="shareList('${list.id}')">Ulashish</button>
                     </div>
@@ -644,8 +1021,10 @@
 
             const tasksList = card.querySelector(`#tasksList${list.id}`);
             sortedTasks.forEach((task, index) => {
-                const taskItem = createTaskItem(task, index, list.id, list.isShared, canCheck, canEdit);
-                tasksList.appendChild(taskItem);
+                if (!searchQuery || task.text.toLowerCase().includes(searchQuery)) {
+                    const taskItem = createTaskItem(task, index, list.id, list.isShared, canCheck, canEdit);
+                    tasksList.appendChild(taskItem);
+                }
             });
 
             if (list.isShared && list.sharedWith) {
@@ -657,27 +1036,59 @@
 
         function createTaskItem(task, index, listId, isShared, canCheck, canEdit) {
             const li = document.createElement('li');
-            li.className = `task-item ${task.completed ? 'completed' : ''}`;
+            li.className = `task-item ${task.completed ? 'completed' : ''} priority-${task.priority || 'medium'}`;
+
+            const now = new Date();
+            const deadline = task.deadline ? new Date(task.deadline) : null;
+            const isOverdue = deadline && deadline < now && !task.completed;
 
             li.innerHTML = `
+                ${canEdit ? `<span class="star-btn ${task.starred ? 'starred' : ''}" onclick="toggleStar('${listId}', ${index}, ${isShared})">⭐</span>` : ''}
                 <div class="checkbox" ${canCheck ? `onclick="toggleTask('${listId}', ${index}, ${isShared})"` : ''}></div>
-                <span class="task-text">${task.text}</span>
-                <select class="status-select status-${task.status || 'todo'}" 
-                    ${canEdit ? '' : 'disabled'}
-                    onchange="updateTaskStatus('${listId}', ${index}, this.value, ${isShared})"
-                    onmouseenter="showStatusTooltip(event, '${task.status || 'todo'}')"
-                    onmouseleave="hideStatusTooltip()">
-                    <option value="backlog" ${task.status === 'backlog' ? 'selected' : ''}>Backlog</option>
-                    <option value="todo" ${!task.status || task.status === 'todo' ? 'selected' : ''}>To Do</option>
-                    <option value="progress" ${task.status === 'progress' ? 'selected' : ''}>In Progress</option>
-                    <option value="review" ${task.status === 'review' ? 'selected' : ''}>Review</option>
-                    <option value="done" ${task.status === 'done' ? 'selected' : ''}>Done</option>
-                    <option value="hold" ${task.status === 'hold' ? 'selected' : ''}>On Hold</option>
-                </select>
-                ${canEdit ? `<button class="delete-task-btn" onclick="deleteTask('${listId}', ${index}, ${isShared})">×</button>` : ''}
+                <div style="flex: 1;">
+                    <span class="task-text">${task.text}</span>
+                    ${task.deadline ? `<div class="task-deadline ${isOverdue ? 'overdue' : ''}">📅 ${formatDate(task.deadline)} ${isOverdue ? '⚠️ Muddati o\'tgan!' : ''}</div>` : ''}
+                </div>
+                <div class="task-actions">
+                    ${canEdit ? `
+                    <select class="priority-select priority-${task.priority || 'medium'}" 
+                        onchange="updateTaskPriority('${listId}', ${index}, this.value, ${isShared})">
+                        <option value="low" ${task.priority === 'low' ? 'selected' : ''}>Past</option>
+                        <option value="medium" ${!task.priority || task.priority === 'medium' ? 'selected' : ''}>O'rta</option>
+                        <option value="high" ${task.priority === 'high' ? 'selected' : ''}>Yuqori</option>
+                        <option value="critical" ${task.priority === 'critical' ? 'selected' : ''}>Juda muhim</option>
+                    </select>
+                    ` : ''}
+                    <select class="status-select status-${task.status || 'todo'}" 
+                        ${canEdit ? '' : 'disabled'}
+                        onchange="updateTaskStatus('${listId}', ${index}, this.value, ${isShared})">
+                        <option value="backlog" ${task.status === 'backlog' ? 'selected' : ''}>Backlog</option>
+                        <option value="todo" ${!task.status || task.status === 'todo' ? 'selected' : ''}>To Do</option>
+                        <option value="progress" ${task.status === 'progress' ? 'selected' : ''}>In Progress</option>
+                        <option value="review" ${task.status === 'review' ? 'selected' : ''}>Review</option>
+                        <option value="done" ${task.status === 'done' ? 'selected' : ''}>Done</option>
+                        <option value="hold" ${task.status === 'hold' ? 'selected' : ''}>On Hold</option>
+                    </select>
+                    ${canEdit ? `<button class="delete-task-btn" onclick="deleteTask('${listId}', ${index}, ${isShared})">🗑️</button>` : ''}
+                </div>
             `;
 
             return li;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            if (date.toDateString() === today.toDateString()) {
+                return 'Bugun';
+            } else if (date.toDateString() === tomorrow.toDateString()) {
+                return 'Ertaga';
+            } else {
+                return date.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short' });
+            }
         }
 
         function getPermission(list) {
@@ -694,6 +1105,13 @@
             
             const path = isShared ? `sharedLists/${listId}/title` : `users/${currentUser.uid}/lists/${listId}/title`;
             database.ref(path).set(newTitle.trim());
+        }
+
+        function deleteList(listId, isShared) {
+            if (!confirm('Rostdan ham bu ro\'yxatni o\'chirmoqchimisiz?')) return;
+            
+            const path = isShared ? `sharedLists/${listId}` : `users/${currentUser.uid}/lists/${listId}`;
+            database.ref(path).remove();
         }
 
         function createList() {
@@ -729,28 +1147,50 @@
 
         function addTask(listId, isShared) {
             const input = document.getElementById(`taskInput${listId}`);
+            const deadlineInput = document.getElementById(`deadlineInput${listId}`);
             const text = input.value.trim();
             if (!text) return;
 
             const list = lists.find(l => l.id === listId);
             const tasks = list.tasks || [];
-            tasks.push({
+            
+            const newTask = {
                 text,
                 completed: false,
                 status: 'todo',
+                priority: 'medium',
+                starred: false,
                 createdBy: currentUser.uid,
-                assignedTo: currentUser.uid
-            });
+                assignedTo: currentUser.uid,
+                createdAt: Date.now()
+            };
+
+            if (deadlineInput.value) {
+                newTask.deadline = deadlineInput.value;
+            }
+
+            tasks.push(newTask);
 
             const path = isShared ? `sharedLists/${listId}/tasks` : `users/${currentUser.uid}/lists/${listId}/tasks`;
             database.ref(path).set(tasks);
+            
             input.value = '';
+            deadlineInput.value = '';
         }
 
         function toggleTask(listId, index, isShared) {
             const list = lists.find(l => l.id === listId);
             const tasks = list.tasks;
             tasks[index].completed = !tasks[index].completed;
+
+            const path = isShared ? `sharedLists/${listId}/tasks` : `users/${currentUser.uid}/lists/${listId}/tasks`;
+            database.ref(path).set(tasks);
+        }
+
+        function toggleStar(listId, index, isShared) {
+            const list = lists.find(l => l.id === listId);
+            const tasks = list.tasks;
+            tasks[index].starred = !tasks[index].starred;
 
             const path = isShared ? `sharedLists/${listId}/tasks` : `users/${currentUser.uid}/lists/${listId}/tasks`;
             database.ref(path).set(tasks);
@@ -765,7 +1205,18 @@
             database.ref(path).set(tasks);
         }
 
+        function updateTaskPriority(listId, index, priority, isShared) {
+            const list = lists.find(l => l.id === listId);
+            const tasks = list.tasks;
+            tasks[index].priority = priority;
+
+            const path = isShared ? `sharedLists/${listId}/tasks` : `users/${currentUser.uid}/lists/${listId}/tasks`;
+            database.ref(path).set(tasks);
+        }
+
         function deleteTask(listId, index, isShared) {
+            if (!confirm('Bu vazifani o\'chirmoqchimisiz?')) return;
+            
             const list = lists.find(l => l.id === listId);
             const tasks = list.tasks;
             tasks.splice(index, 1);
@@ -796,23 +1247,11 @@
                 div.innerHTML = `
                     <span>${email.replace(/_/g, '.')}</span>
                     <span class="permission-badge perm-${perm}">
-                        ${perm === 'viewer' ? 'Kuzatuvchi' : perm === 'executor' ? 'Bajaruvchi' : 'Yaratuvchi'}
+                        ${perm === 'viewer' ? '👁️ Kuzatuvchi' : perm === 'executor' ? '✅ Bajaruvchi' : '👑 Yaratuvchi'}
                     </span>
                 `;
                 container.appendChild(div);
             });
-        }
-
-        function showStatusTooltip(event, status) {
-            const tooltip = document.getElementById('statusTooltip');
-            tooltip.textContent = statusDescriptions[status] || '';
-            tooltip.style.display = 'block';
-            tooltip.style.left = event.pageX + 10 + 'px';
-            tooltip.style.top = event.pageY + 10 + 'px';
-        }
-
-        function hideStatusTooltip() {
-            document.getElementById('statusTooltip').style.display = 'none';
         }
 
         document.getElementById('newListBtn').addEventListener('click', createList);
