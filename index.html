@@ -100,6 +100,11 @@
             background: var(--primary-dark);
         }
 
+        .login-btn:disabled, .logout-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .theme-toggle {
             display: flex;
             align-items: center;
@@ -189,6 +194,10 @@
             color: var(--text-main);
         }
 
+        .new-list-input.error {
+            border-color: var(--danger);
+        }
+
         .new-list-btn {
             padding: 12px 25px;
             background: var(--primary);
@@ -198,6 +207,11 @@
             cursor: pointer;
             font-weight: 600;
             white-space: nowrap;
+        }
+
+        .new-list-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .lists-container {
@@ -211,10 +225,16 @@
             border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             padding: 20px;
+            position: relative;
         }
 
         .list-card.shared {
             border: 2px solid var(--success);
+        }
+
+        .list-card.loading {
+            opacity: 0.6;
+            pointer-events: none;
         }
 
         .list-header {
@@ -272,6 +292,10 @@
             font-size: 14px;
         }
 
+        .task-input.error {
+            border-color: var(--danger);
+        }
+
         .deadline-input {
             padding: 10px 12px;
             border: 2px solid var(--border);
@@ -290,6 +314,11 @@
             border-radius: 8px;
             cursor: pointer;
             white-space: nowrap;
+        }
+
+        .add-task-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .tasks-list {
@@ -441,6 +470,11 @@
             display: inline-block;
         }
 
+        .file-input-label.uploading {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .file-input {
             display: none;
         }
@@ -479,6 +513,10 @@
             font-size: 13px;
         }
 
+        .share-email-input.error {
+            border-color: var(--danger);
+        }
+
         .permission-select {
             padding: 8px;
             border: 2px solid var(--border);
@@ -497,6 +535,11 @@
             cursor: pointer;
             font-size: 13px;
             white-space: nowrap;
+        }
+
+        .share-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .shared-users {
@@ -539,6 +582,63 @@
             margin-bottom: 15px;
             font-size: 13px;
             display: none;
+        }
+
+        .error-notice {
+            background: var(--danger);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .success-notice {
+            background: var(--success);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-text {
+            color: var(--danger);
+            font-size: 12px;
+            margin-top: 5px;
         }
 
         /* Mobile optimizations */
@@ -602,6 +702,10 @@
     </style>
 </head>
 <body data-theme="light">
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
     <div class="main-container">
         <div class="header">
             <div class="user-section">
@@ -617,6 +721,9 @@
             <div class="sync-notice" id="syncNotice">
                 ⚠️ Siz offline rejimda ishlayapsiz. Ma'lumotlar faqat shu qurilmada saqlanadi. Google orqali kiring va ma'lumotlaringiz bulutda saqlansin.
             </div>
+
+            <div class="error-notice" id="errorNotice"></div>
+            <div class="success-notice" id="successNotice"></div>
 
             <h1>📋 Vazifalar Boshqaruvi</h1>
 
@@ -664,7 +771,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-storage-compat.min.js"></script>
 
     <script>
-        // Firebase Config
+        // ===== FIREBASE CONFIGURATION =====
+        // MUHIM: Production muhitda bu configni environment variables yoki secure backend'dan oling
+        // Bu faqat demo maqsadida. Real loyihada Firebase Security Rules ni to'g'ri sozlang!
         const firebaseConfig = {
             apiKey: "AIzaSyCwtHihZq8qFRCaCs2tJBC16cPG-bUWho0",
             authDomain: "checkbox-5b848.firebaseapp.com",
@@ -676,44 +785,139 @@
             measurementId: "G-1VHZ91HQ72"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const auth = firebase.auth();
-        const storage = firebase.storage();
-        const provider = new firebase.auth.GoogleAuthProvider();
+        // Firebase initialization with error handling
+        let database, auth, storage, provider;
+        
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+            auth = firebase.auth();
+            storage = firebase.storage();
+            provider = new firebase.auth.GoogleAuthProvider();
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+            showError('Firebase ishga tushurishda xatolik yuz berdi');
+        }
 
+        // ===== GLOBAL VARIABLES =====
         let currentUser = null;
         let lists = [];
         let searchQuery = '';
         let isOnlineMode = false;
+        let syncedListIds = new Set(); // Dublikatlarni oldini olish uchun
 
-        // Tema
+        // ===== UTILITY FUNCTIONS =====
+        
+        function showLoading(show = true) {
+            const overlay = document.getElementById('loadingOverlay');
+            if (show) {
+                overlay.classList.add('active');
+            } else {
+                overlay.classList.remove('active');
+            }
+        }
+
+        function showError(message, duration = 5000) {
+            const notice = document.getElementById('errorNotice');
+            notice.textContent = message;
+            notice.style.display = 'block';
+            setTimeout(() => {
+                notice.style.display = 'none';
+            }, duration);
+        }
+
+        function showSuccess(message, duration = 3000) {
+            const notice = document.getElementById('successNotice');
+            notice.textContent = message;
+            notice.style.display = 'block';
+            setTimeout(() => {
+                notice.style.display = 'none';
+            }, duration);
+        }
+
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email.toLowerCase());
+        }
+
+        function sanitizeInput(input) {
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        }
+
+        function validateFileSize(file, maxSizeMB = 10) {
+            const maxSize = maxSizeMB * 1024 * 1024;
+            return file.size <= maxSize;
+        }
+
+        function validateFileType(file, allowedTypes = ['image/*', 'application/pdf', '.doc', '.docx', '.txt']) {
+            // Basic file type validation
+            return true; // Bu yerda kerakli file type validation qo'shing
+        }
+
+        // ===== THEME FUNCTIONS =====
+        
         function toggleTheme() {
             const currentTheme = document.body.getAttribute('data-theme');
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             document.body.setAttribute('data-theme', newTheme);
             document.getElementById('themeIcon').textContent = newTheme === 'light' ? '🌙' : '☀️';
             document.getElementById('themeText').textContent = newTheme === 'light' ? 'Qorong\'i rejim' : 'Yorug\' rejim';
-            localStorage.setItem('theme', newTheme);
+            
+            try {
+                localStorage.setItem('theme', newTheme);
+            } catch (error) {
+                console.error('Theme save error:', error);
+            }
         }
 
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            toggleTheme();
+        // Load saved theme
+        try {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                toggleTheme();
+            }
+        } catch (error) {
+            console.error('Theme load error:', error);
         }
 
-        // Qidiruv
+        // ===== SEARCH FUNCTION =====
+        
         document.getElementById('searchInput').addEventListener('input', (e) => {
             searchQuery = e.target.value.toLowerCase();
             renderLists();
         });
 
-        // Google Authentication
-        document.getElementById('loginBtn').addEventListener('click', () => {
-            auth.signInWithPopup(provider).catch(err => {
-                console.error('Login error:', err);
-                alert('Kirishda xatolik yuz berdi!');
-            });
+        // ===== AUTHENTICATION =====
+        
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = true;
+            btn.textContent = 'Yuklanmoqda...';
+            showLoading(true);
+            
+            try {
+                await auth.signInWithPopup(provider);
+                showSuccess('Muvaffaqiyatli kirdingiz!');
+            } catch (error) {
+                console.error('Login error:', error);
+                let errorMessage = 'Kirishda xatolik yuz berdi!';
+                
+                if (error.code === 'auth/popup-closed-by-user') {
+                    errorMessage = 'Kirish bekor qilindi';
+                } else if (error.code === 'auth/network-request-failed') {
+                    errorMessage = 'Internet aloqasi yo\'q';
+                } else if (error.code === 'auth/unauthorized-domain') {
+                    errorMessage = 'Bu domen uchun avtorizatsiya yo\'q';
+                }
+                
+                showError(errorMessage);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Google orqali kirish';
+                showLoading(false);
+            }
         });
 
         auth.onAuthStateChanged(user => {
@@ -736,10 +940,10 @@
             const userInfo = document.getElementById('userInfo');
             if (currentUser) {
                 userInfo.innerHTML = `
-                    <img src="${currentUser.photoURL}" class="user-avatar" alt="Avatar">
+                    <img src="${currentUser.photoURL}" class="user-avatar" alt="Avatar" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2245%22 height=%2245%22><rect width=%22100%%22 height=%22100%%22 fill=%22%23667eea%22/><text x=%2250%%22 y=%2250%%22 font-size=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22>${currentUser.displayName.charAt(0)}</text></svg>'">
                     <div>
-                        <div class="user-name">${currentUser.displayName}</div>
-                        <div style="font-size: 11px; color: var(--text-secondary)">${currentUser.email}</div>
+                        <div class="user-name">${sanitizeInput(currentUser.displayName)}</div>
+                        <div style="font-size: 11px; color: var(--text-secondary)">${sanitizeInput(currentUser.email)}</div>
                     </div>
                     <button class="logout-btn" onclick="logout()">Chiqish</button>
                 `;
@@ -748,76 +952,137 @@
 
         function logout() {
             if (confirm('Chiqishdan oldin ma\'lumotlaringiz saqlanganligiga ishonchingiz komilmi?')) {
-                auth.signOut();
-                lists = [];
-                renderLists();
+                showLoading(true);
+                auth.signOut().then(() => {
+                    lists = [];
+                    syncedListIds.clear();
+                    renderLists();
+                    showSuccess('Chiqish muvaffaqiyatli!');
+                }).catch(error => {
+                    console.error('Logout error:', error);
+                    showError('Chiqishda xatolik yuz berdi');
+                }).finally(() => {
+                    showLoading(false);
+                });
             }
         }
 
-        // Local Storage funksiyalari
+        // ===== LOCAL STORAGE FUNCTIONS =====
+        
         function saveToLocal() {
-            localStorage.setItem('localLists', JSON.stringify(lists));
+            try {
+                localStorage.setItem('localLists', JSON.stringify(lists));
+            } catch (error) {
+                console.error('Local save error:', error);
+                if (error.name === 'QuotaExceededError') {
+                    showError('Xotira to\'ldi! Ba\'zi ma\'lumotlar saqlanmadi.');
+                }
+            }
         }
 
         function loadLocalLists() {
-            const saved = localStorage.getItem('localLists');
-            lists = saved ? JSON.parse(saved) : [];
-            updateStats();
-            renderLists();
-        }
-
-        function syncLocalToFirebase() {
-            const localData = localStorage.getItem('localLists');
-            if (localData && currentUser) {
-                const localLists = JSON.parse(localData);
-                if (localLists.length > 0) {
-                    if (confirm('Sizda offline ma\'lumotlar bor. Ularni bulutga yuklashni xohlaysizmi?')) {
-                        localLists.forEach(list => {
-                            database.ref(`users/${currentUser.uid}/lists`).push({
-                                ...list,
-                                owner: currentUser.uid,
-                                ownerName: currentUser.displayName,
-                                createdAt: Date.now()
-                            });
-                        });
-                        localStorage.removeItem('localLists');
-                    }
-                }
+            try {
+                const saved = localStorage.getItem('localLists');
+                lists = saved ? JSON.parse(saved) : [];
+                updateStats();
+                renderLists();
+            } catch (error) {
+                console.error('Local load error:', error);
+                showError('Lokal ma\'lumotlarni yuklashda xatolik');
+                lists = [];
             }
         }
 
+        async function syncLocalToFirebase() {
+            try {
+                const localData = localStorage.getItem('localLists');
+                if (localData && currentUser) {
+                    const localLists = JSON.parse(localData);
+                    if (localLists.length > 0) {
+                        if (confirm(`Sizda ${localLists.length} ta offline ro\'yxat bor. Ularni bulutga yuklashni xohlaysizmi?`)) {
+                            showLoading(true);
+                            
+                            for (const list of localLists) {
+                                // Dublikat tekshirish
+                                const listHash = `${list.title}_${list.createdAt}`;
+                                if (!syncedListIds.has(listHash)) {
+                                    try {
+                                        await database.ref(`users/${currentUser.uid}/lists`).push({
+                                            ...list,
+                                            owner: currentUser.uid,
+                                            ownerName: currentUser.displayName,
+                                            createdAt: list.createdAt || Date.now(),
+                                            syncedAt: Date.now()
+                                        });
+                                        syncedListIds.add(listHash);
+                                    } catch (error) {
+                                        console.error('Sync error for list:', error);
+                                    }
+                                }
+                            }
+                            
+                            localStorage.removeItem('localLists');
+                            showSuccess('Ma\'lumotlar muvaffaqiyatli yuklandi!');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Sync error:', error);
+                showError('Sync qilishda xatolik yuz berdi');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ===== FIREBASE DATA LOADING =====
+        
         function loadLists() {
             if (!currentUser) return;
 
-            database.ref(`users/${currentUser.uid}/lists`).on('value', snapshot => {
-                const privateLists = [];
-                const data = snapshot.val();
-                if (data) {
-                    Object.keys(data).forEach(key => {
-                        privateLists.push({ ...data[key], id: key, isShared: false });
-                    });
-                }
-                
-                database.ref('sharedLists').once('value', sharedSnapshot => {
-                    const sharedLists = [];
-                    const sharedData = sharedSnapshot.val();
-                    if (sharedData) {
-                        Object.keys(sharedData).forEach(key => {
-                            const list = sharedData[key];
-                            if (list.owner === currentUser.uid || 
-                                (list.sharedWith && list.sharedWith[currentUser.email])) {
-                                sharedLists.push({ ...list, id: key, isShared: true });
-                            }
+            try {
+                database.ref(`users/${currentUser.uid}/lists`).on('value', snapshot => {
+                    const privateLists = [];
+                    const data = snapshot.val();
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            privateLists.push({ ...data[key], id: key, isShared: false });
                         });
                     }
                     
-                    lists = [...privateLists, ...sharedLists];
-                    updateStats();
-                    renderLists();
+                    database.ref('sharedLists').once('value', sharedSnapshot => {
+                        const sharedLists = [];
+                        const sharedData = sharedSnapshot.val();
+                        
+                        if (sharedData) {
+                            Object.keys(sharedData).forEach(key => {
+                                const list = sharedData[key];
+                                if (list.owner === currentUser.uid || 
+                                    (list.sharedWith && list.sharedWith[currentUser.email.replace(/\./g, '_')])) {
+                                    sharedLists.push({ ...list, id: key, isShared: true });
+                                }
+                            });
+                        }
+                        
+                        lists = [...privateLists, ...sharedLists];
+                        updateStats();
+                        renderLists();
+                    }, error => {
+                        console.error('Shared lists load error:', error);
+                        showError('Ulashilgan ro\'yxatlarni yuklashda xatolik');
+                    });
+                }, error => {
+                    console.error('Lists load error:', error);
+                    showError('Ro\'yxatlarni yuklashda xatolik');
                 });
-            });
+            } catch (error) {
+                console.error('Load lists error:', error);
+                showError('Ma\'lumotlarni yuklashda xatolik');
+            }
         }
 
+        // ===== STATISTICS =====
+        
         function updateStats() {
             let total = 0;
             let completed = 0;
@@ -838,6 +1103,8 @@
             document.getElementById('completionRate').textContent = rate + '%';
         }
 
+        // ===== RENDER FUNCTIONS =====
+        
         function renderLists() {
             const container = document.getElementById('listsContainer');
             const noLists = document.getElementById('noLists');
@@ -864,8 +1131,12 @@
             container.innerHTML = '';
 
             filteredLists.forEach(list => {
-                const card = createListCard(list);
-                container.appendChild(card);
+                try {
+                    const card = createListCard(list);
+                    container.appendChild(card);
+                } catch (error) {
+                    console.error('Render list error:', error);
+                }
             });
         }
 
@@ -885,16 +1156,17 @@
 
             card.innerHTML = `
                 <div class="list-header">
-                    <input type="text" class="list-title-edit" value="${list.title}" 
+                    <input type="text" class="list-title-edit" value="${sanitizeInput(list.title)}" 
                         ${canEdit ? '' : 'readonly'} 
-                        onblur="updateListTitle('${list.id}', this.value, ${list.isShared})">
+                        onblur="updateListTitle('${list.id}', this.value, ${list.isShared})"
+                        maxlength="100">
                     ${canEdit ? `<button class="delete-list-btn" onclick="deleteList('${list.id}', ${list.isShared})">🗑️</button>` : ''}
                 </div>
                 
                 ${canEdit ? `
                 <div class="task-input-section">
                     <div class="task-input-row">
-                        <input type="text" class="task-input" id="taskInput${list.id}" placeholder="Yangi vazifa...">
+                        <input type="text" class="task-input" id="taskInput${list.id}" placeholder="Yangi vazifa..." maxlength="500">
                         <input type="date" class="deadline-input" id="deadlineInput${list.id}">
                     </div>
                     <button class="add-task-btn" onclick="addTask('${list.id}', ${list.isShared})">+ Qo'shish</button>
@@ -906,7 +1178,7 @@
                 <div class="share-section">
                     <strong>👥 Ulashish:</strong>
                     <div class="share-input-group">
-                        <input type="email" class="share-email-input" id="shareEmail${list.id}" placeholder="Email">
+                        <input type="email" class="share-email-input" id="shareEmail${list.id}" placeholder="Email manzili">
                         <select class="permission-select" id="sharePerm${list.id}">
                             <option value="viewer">Kuzatuvchi</option>
                             <option value="executor">Bajaruvchi</option>
@@ -921,8 +1193,12 @@
             const tasksList = card.querySelector(`#tasksList${list.id}`);
             sortedTasks.forEach((task, index) => {
                 if (!searchQuery || task.text.toLowerCase().includes(searchQuery)) {
-                    const taskItem = createTaskItem(task, index, list.id, list.isShared, canCheck, canEdit);
-                    tasksList.appendChild(taskItem);
+                    try {
+                        const taskItem = createTaskItem(task, index, list.id, list.isShared, canCheck, canEdit);
+                        tasksList.appendChild(taskItem);
+                    } catch (error) {
+                        console.error('Create task item error:', error);
+                    }
                 }
             });
 
@@ -946,12 +1222,13 @@
                     ${canEdit ? `<span class="star-btn ${task.starred ? 'starred' : ''}" onclick="toggleStar('${listId}', ${index}, ${isShared})">⭐</span>` : ''}
                     <div class="checkbox" ${canCheck ? `onclick="toggleTask('${listId}', ${index}, ${isShared})"` : ''}></div>
                     <div class="task-content">
-                        <input type="text" class="task-text-edit" value="${task.text}" 
+                        <input type="text" class="task-text-edit" value="${sanitizeInput(task.text)}" 
                             ${canEdit ? '' : 'readonly'}
-                            onblur="updateTaskText('${listId}', ${index}, this.value, ${isShared})">
+                            onblur="updateTaskText('${listId}', ${index}, this.value, ${isShared})"
+                            maxlength="500">
                         <div class="task-meta">
                             ${task.deadline ? `<span class="task-deadline ${isOverdue ? 'overdue' : ''}">📅 ${formatDate(task.deadline)} ${isOverdue ? '⚠️' : ''}</span>` : ''}
-                            ${task.fileName ? `<a href="${task.fileUrl}" class="task-file" target="_blank" download="${task.fileName}">📎 ${task.fileName}</a>` : ''}
+                            ${task.fileName ? `<a href="${task.fileUrl}" class="task-file" target="_blank" download="${sanitizeInput(task.fileName)}">📎 ${sanitizeInput(task.fileName)}</a>` : ''}
                         </div>
                     </div>
                 </div>
@@ -975,9 +1252,10 @@
                         <option value="done" ${task.status === 'done' ? 'selected' : ''}>Done</option>
                     </select>
                     ${canEdit ? `
-                    <label class="file-input-label">
+                    <label class="file-input-label" id="fileLabel${listId}${index}">
                         📎 Fayl
-                        <input type="file" class="file-input" onchange="uploadFile('${listId}', ${index}, this, ${isShared})">
+                        <input type="file" class="file-input" onchange="uploadFile('${listId}', ${index}, this, ${isShared})" 
+                            accept="image/*,.pdf,.doc,.docx,.txt,.xlsx,.xls,.zip">
                     </label>
                     <button class="delete-task-btn" onclick="deleteTask('${listId}', ${index}, ${isShared})">🗑️</button>
                     ` : ''}
@@ -988,239 +1266,457 @@
         }
 
         function formatDate(dateString) {
-            const date = new Date(dateString);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const taskDate = new Date(date);
-            taskDate.setHours(0, 0, 0, 0);
+            try {
+                const date = new Date(dateString);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const taskDate = new Date(date);
+                taskDate.setHours(0, 0, 0, 0);
 
-            const diff = (taskDate - today) / (1000 * 60 * 60 * 24);
+                const diff = (taskDate - today) / (1000 * 60 * 60 * 24);
 
-            if (diff === 0) return 'Bugun';
-            if (diff === 1) return 'Ertaga';
-            if (diff === -1) return 'Kecha';
-            
-            return date.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short' });
+                if (diff === 0) return 'Bugun';
+                if (diff === 1) return 'Ertaga';
+                if (diff === -1) return 'Kecha';
+                
+                return date.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short' });
+            } catch (error) {
+                console.error('Date format error:', error);
+                return dateString;
+            }
         }
 
         function getPermission(list) {
             if (!isOnlineMode) return 'creator';
             if (!currentUser) return 'viewer';
             if (list.owner === currentUser.uid) return 'creator';
-            if (list.sharedWith && list.sharedWith[currentUser.email]) {
-                return list.sharedWith[currentUser.email];
+            if (list.sharedWith && list.sharedWith[currentUser.email.replace(/\./g, '_')]) {
+                return list.sharedWith[currentUser.email.replace(/\./g, '_')];
             }
             return 'viewer';
         }
 
-        function saveData(listId, isShared) {
-            if (isOnlineMode) {
-                const list = lists.find(l => l.id === listId);
-                const path = isShared ? `sharedLists/${listId}` : `users/${currentUser.uid}/lists/${listId}`;
-                database.ref(path).set(list);
-            } else {
-                saveToLocal();
-            }
-            updateStats();
-        }
-
-        function updateListTitle(listId, newTitle, isShared) {
-            if (!newTitle.trim()) return;
-            
-            const list = lists.find(l => l.id === listId);
-            list.title = newTitle.trim();
-            
-            if (isOnlineMode) {
-                const path = isShared ? `sharedLists/${listId}/title` : `users/${currentUser.uid}/lists/${listId}/title`;
-                database.ref(path).set(newTitle.trim());
-            } else {
-                saveToLocal();
+        // ===== DATA OPERATIONS =====
+        
+        async function saveData(listId, isShared) {
+            try {
+                if (isOnlineMode) {
+                    const list = lists.find(l => l.id === listId);
+                    if (!list) return;
+                    
+                    const path = isShared ? `sharedLists/${listId}` : `users/${currentUser.uid}/lists/${listId}`;
+                    await database.ref(path).set(list);
+                } else {
+                    saveToLocal();
+                }
+                updateStats();
+            } catch (error) {
+                console.error('Save data error:', error);
+                showError('Ma\'lumotlarni saqlashda xatolik');
             }
         }
 
-        function deleteList(listId, isShared) {
-            if (!confirm('Rostdan ham bu ro\'yxatni o\'chirmoqchimisiz?')) return;
-            
-            if (isOnlineMode) {
-                const path = isShared ? `sharedLists/${listId}` : `users/${currentUser.uid}/lists/${listId}`;
-                database.ref(path).remove();
-            } else {
-                lists = lists.filter(l => l.id !== listId);
-                saveToLocal();
+        async function updateListTitle(listId, newTitle, isShared) {
+            const title = newTitle.trim();
+            if (!title) {
+                showError('Ro\'yxat nomi bo\'sh bo\'lishi mumkin emas');
                 renderLists();
+                return;
+            }
+            
+            if (title.length > 100) {
+                showError('Ro\'yxat nomi 100 belgidan oshmasligi kerak');
+                return;
+            }
+            
+            try {
+                const list = lists.find(l => l.id === listId);
+                if (!list) return;
+                
+                list.title = title;
+                
+                if (isOnlineMode) {
+                    const path = isShared ? `sharedLists/${listId}/title` : `users/${currentUser.uid}/lists/${listId}/title`;
+                    await database.ref(path).set(title);
+                } else {
+                    saveToLocal();
+                }
+            } catch (error) {
+                console.error('Update title error:', error);
+                showError('Nomni yangilashda xatolik');
             }
         }
 
-        function createList() {
+        async function deleteList(listId, isShared) {
+            if (!confirm('Rostdan ham bu ro\'yxatni o\'chirmoqchimisiz? Bu amalni ortga qaytarib bo\'lmaydi!')) return;
+            
+            try {
+                showLoading(true);
+                
+                if (isOnlineMode) {
+                    const path = isShared ? `sharedLists/${listId}` : `users/${currentUser.uid}/lists/${listId}`;
+                    await database.ref(path).remove();
+                    showSuccess('Ro\'yxat o\'chirildi');
+                } else {
+                    lists = lists.filter(l => l.id !== listId);
+                    saveToLocal();
+                    renderLists();
+                    showSuccess('Ro\'yxat o\'chirildi');
+                }
+            } catch (error) {
+                console.error('Delete list error:', error);
+                showError('Ro\'yxatni o\'chirishda xatolik');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function createList() {
             const input = document.getElementById('newListInput');
             const title = input.value.trim();
 
-            if (!title) return;
-
-            const newList = {
-                id: 'list_' + Date.now(),
-                title,
-                tasks: [],
-                createdAt: Date.now()
-            };
-
-            if (isOnlineMode) {
-                newList.owner = currentUser.uid;
-                newList.ownerName = currentUser.displayName;
-                database.ref(`users/${currentUser.uid}/lists`).push(newList);
-            } else {
-                lists.push(newList);
-                saveToLocal();
-                renderLists();
-            }
-
-            input.value = '';
-        }
-
-        function addTask(listId, isShared) {
-            const input = document.getElementById(`taskInput${listId}`);
-            const deadlineInput = document.getElementById(`deadlineInput${listId}`);
-            const text = input.value.trim();
-            if (!text) return;
-
-            const list = lists.find(l => l.id === listId);
-            if (!list.tasks) list.tasks = [];
-            
-            const newTask = {
-                text,
-                completed: false,
-                status: 'todo',
-                priority: 'medium',
-                starred: false,
-                createdAt: Date.now()
-            };
-
-            if (isOnlineMode) {
-                newTask.createdBy = currentUser.uid;
-            }
-
-            if (deadlineInput.value) {
-                newTask.deadline = deadlineInput.value;
-            }
-
-            list.tasks.push(newTask);
-            saveData(listId, isShared);
-            
-            input.value = '';
-            deadlineInput.value = '';
-            renderLists();
-        }
-
-        function updateTaskText(listId, index, newText, isShared) {
-            if (!newText.trim()) return;
-            
-            const list = lists.find(l => l.id === listId);
-            list.tasks[index].text = newText.trim();
-            saveData(listId, isShared);
-        }
-
-        function toggleTask(listId, index, isShared) {
-            const list = lists.find(l => l.id === listId);
-            list.tasks[index].completed = !list.tasks[index].completed;
-            saveData(listId, isShared);
-            renderLists();
-        }
-
-        function toggleStar(listId, index, isShared) {
-            const list = lists.find(l => l.id === listId);
-            list.tasks[index].starred = !list.tasks[index].starred;
-            saveData(listId, isShared);
-            renderLists();
-        }
-
-        function updateTaskStatus(listId, index, status, isShared) {
-            const list = lists.find(l => l.id === listId);
-            list.tasks[index].status = status;
-            saveData(listId, isShared);
-        }
-
-        function updateTaskPriority(listId, index, priority, isShared) {
-            const list = lists.find(l => l.id === listId);
-            list.tasks[index].priority = priority;
-            saveData(listId, isShared);
-            renderLists();
-        }
-
-        function uploadFile(listId, index, input, isShared) {
-            const file = input.files[0];
-            if (!file) return;
-
-            if (file.size > 10 * 1024 * 1024) {
-                alert('Fayl hajmi 10MB dan kichik bo\'lishi kerak!');
+            if (!title) {
+                input.classList.add('error');
+                showError('Ro\'yxat nomini kiriting');
+                setTimeout(() => input.classList.remove('error'), 2000);
                 return;
             }
 
-            const list = lists.find(l => l.id === listId);
-            
-            if (isOnlineMode) {
-                const storageRef = storage.ref(`files/${currentUser.uid}/${Date.now()}_${file.name}`);
-                storageRef.put(file).then(snapshot => {
-                    snapshot.ref.getDownloadURL().then(url => {
-                        list.tasks[index].fileUrl = url;
-                        list.tasks[index].fileName = file.name;
-                        saveData(listId, isShared);
-                        renderLists();
-                    });
-                });
-            } else {
-                // Offline mode - base64
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    list.tasks[index].fileUrl = e.target.result;
-                    list.tasks[index].fileName = file.name;
+            if (title.length > 100) {
+                showError('Ro\'yxat nomi 100 belgidan oshmasligi kerak');
+                return;
+            }
+
+            try {
+                const btn = document.getElementById('newListBtn');
+                btn.disabled = true;
+                showLoading(true);
+
+                const newList = {
+                    title: sanitizeInput(title),
+                    tasks: [],
+                    createdAt: Date.now()
+                };
+
+                if (isOnlineMode) {
+                    newList.owner = currentUser.uid;
+                    newList.ownerName = currentUser.displayName;
+                    await database.ref(`users/${currentUser.uid}/lists`).push(newList);
+                    showSuccess('Ro\'yxat yaratildi');
+                } else {
+                    newList.id = 'list_' + Date.now();
+                    lists.push(newList);
                     saveToLocal();
                     renderLists();
-                };
-                reader.readAsDataURL(file);
+                    showSuccess('Ro\'yxat yaratildi');
+                }
+
+                input.value = '';
+            } catch (error) {
+                console.error('Create list error:', error);
+                showError('Ro\'yxat yaratishda xatolik');
+            } finally {
+                document.getElementById('newListBtn').disabled = false;
+                showLoading(false);
             }
         }
 
-        function deleteTask(listId, index, isShared) {
-            if (!confirm('Bu vazifani o\'chirmoqchimisiz?')) return;
+        async function addTask(listId, isShared) {
+            const input = document.getElementById(`taskInput${listId}`);
+            const deadlineInput = document.getElementById(`deadlineInput${listId}`);
+            const text = input.value.trim();
             
-            const list = lists.find(l => l.id === listId);
-            list.tasks.splice(index, 1);
-            saveData(listId, isShared);
-            renderLists();
+            if (!text) {
+                input.classList.add('error');
+                showError('Vazifa matnini kiriting');
+                setTimeout(() => input.classList.remove('error'), 2000);
+                return;
+            }
+
+            if (text.length > 500) {
+                showError('Vazifa matni 500 belgidan oshmasligi kerak');
+                return;
+            }
+
+            try {
+                const list = lists.find(l => l.id === listId);
+                if (!list) return;
+                
+                if (!list.tasks) list.tasks = [];
+                
+                const newTask = {
+                    text: sanitizeInput(text),
+                    completed: false,
+                    status: 'todo',
+                    priority: 'medium',
+                    starred: false,
+                    createdAt: Date.now()
+                };
+
+                if (isOnlineMode) {
+                    newTask.createdBy = currentUser.uid;
+                }
+
+                if (deadlineInput.value) {
+                    newTask.deadline = deadlineInput.value;
+                }
+
+                list.tasks.push(newTask);
+                await saveData(listId, isShared);
+                
+                input.value = '';
+                deadlineInput.value = '';
+                renderLists();
+            } catch (error) {
+                console.error('Add task error:', error);
+                showError('Vazifa qo\'shishda xatolik');
+            }
         }
 
-        function shareList(listId) {
-            const email = document.getElementById(`shareEmail${listId}`).value.trim();
+        async function updateTaskText(listId, index, newText, isShared) {
+            const text = newText.trim();
+            if (!text) {
+                showError('Vazifa matni bo\'sh bo\'lishi mumkin emas');
+                renderLists();
+                return;
+            }
+            
+            if (text.length > 500) {
+                showError('Vazifa matni 500 belgidan oshmasligi kerak');
+                return;
+            }
+            
+            try {
+                const list = lists.find(l => l.id === listId);
+                if (!list || !list.tasks[index]) return;
+                
+                list.tasks[index].text = sanitizeInput(text);
+                await saveData(listId, isShared);
+            } catch (error) {
+                console.error('Update task text error:', error);
+                showError('Vazifa matnini yangilashda xatolik');
+            }
+        }
+
+        async function toggleTask(listId, index, isShared) {
+            try {
+                const list = lists.find(l => l.id === listId);
+                if (!list || !list.tasks[index]) return;
+                
+                list.tasks[index].completed = !list.tasks[index].completed;
+                await saveData(listId, isShared);
+                renderLists();
+            } catch (error) {
+                console.error('Toggle task error:', error);
+                showError('Vazifa holatini o\'zgartirishda xatolik');
+            }
+        }
+
+        async function toggleStar(listId, index, isShared) {
+            try {
+                const list = lists.find(l => l.id === listId);
+                if (!list || !list.tasks[index]) return;
+                
+                list.tasks[index].starred = !list.tasks[index].starred;
+                await saveData(listId, isShared);
+                renderLists();
+            } catch (error) {
+                console.error('Toggle star error:', error);
+                showError('Yulduzcha qo\'yishda xatolik');
+            }
+        }
+
+        async function updateTaskStatus(listId, index, status, isShared) {
+            try {
+                const list = lists.find(l => l.id === listId);
+                if (!list || !list.tasks[index]) return;
+                
+                list.tasks[index].status = status;
+                await saveData(listId, isShared);
+            } catch (error) {
+                console.error('Update status error:', error);
+                showError('Statusni yangilashda xatolik');
+            }
+        }
+
+        async function updateTaskPriority(listId, index, priority, isShared) {
+            try {
+                const list = lists.find(l => l.id === listId);
+                if (!list || !list.tasks[index]) return;
+                
+                list.tasks[index].priority = priority;
+                await saveData(listId, isShared);
+                renderLists();
+            } catch (error) {
+                console.error('Update priority error:', error);
+                showError('Prioritetni yangilashda xatolik');
+            }
+        }
+
+        async function uploadFile(listId, index, input, isShared) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // File size validation
+            if (!validateFileSize(file, 10)) {
+                showError('Fayl hajmi 10MB dan kichik bo\'lishi kerak!');
+                input.value = '';
+                return;
+            }
+
+            const label = document.getElementById(`fileLabel${listId}${index}`);
+            
+            try {
+                label.classList.add('uploading');
+                label.textContent = 'Yuklanmoqda...';
+                
+                const list = lists.find(l => l.id === listId);
+                if (!list || !list.tasks[index]) return;
+                
+                if (isOnlineMode) {
+                    const storageRef = storage.ref(`files/${currentUser.uid}/${Date.now()}_${file.name}`);
+                    const snapshot = await storageRef.put(file);
+                    const url = await snapshot.ref.getDownloadURL();
+                    
+                    list.tasks[index].fileUrl = url;
+                    list.tasks[index].fileName = file.name;
+                    await saveData(listId, isShared);
+                    showSuccess('Fayl yuklandi');
+                } else {
+                    // Offline mode - base64
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        list.tasks[index].fileUrl = e.target.result;
+                        list.tasks[index].fileName = file.name;
+                        saveToLocal();
+                        renderLists();
+                        showSuccess('Fayl yuklandi');
+                    };
+                    reader.onerror = function() {
+                        showError('Faylni o\'qishda xatolik');
+                    };
+                    reader.readAsDataURL(file);
+                }
+                
+                renderLists();
+            } catch (error) {
+                console.error('Upload file error:', error);
+                showError('Fayl yuklashda xatolik');
+            } finally {
+                if (label) {
+                    label.classList.remove('uploading');
+                    label.textContent = '📎 Fayl';
+                }
+                input.value = '';
+            }
+        }
+
+        async function deleteTask(listId, index, isShared) {
+            if (!confirm('Bu vazifani o\'chirmoqchimisiz?')) return;
+            
+            try {
+                const list = lists.find(l => l.id === listId);
+                if (!list) return;
+                
+                list.tasks.splice(index, 1);
+                await saveData(listId, isShared);
+                renderLists();
+                showSuccess('Vazifa o\'chirildi');
+            } catch (error) {
+                console.error('Delete task error:', error);
+                showError('Vazifani o\'chirishda xatolik');
+            }
+        }
+
+        async function shareList(listId) {
+            const emailInput = document.getElementById(`shareEmail${listId}`);
+            const email = emailInput.value.trim();
             const permission = document.getElementById(`sharePerm${listId}`).value;
 
-            if (!email) return;
+            if (!email) {
+                emailInput.classList.add('error');
+                showError('Email manzilini kiriting');
+                setTimeout(() => emailInput.classList.remove('error'), 2000);
+                return;
+            }
 
-            database.ref(`sharedLists/${listId}/sharedWith/${email.replace(/\./g, '_')}`).set(permission);
-            document.getElementById(`shareEmail${listId}`).value = '';
+            if (!validateEmail(email)) {
+                emailInput.classList.add('error');
+                showError('Email manzili noto\'g\'ri');
+                setTimeout(() => emailInput.classList.remove('error'), 2000);
+                return;
+            }
+
+            if (email === currentUser.email) {
+                showError('O\'zingizga ulasha olmaysiz');
+                return;
+            }
+
+            try {
+                const btn = document.querySelector(`#shareEmail${listId}`).nextElementSibling.nextElementSibling;
+                btn.disabled = true;
+                
+                await database.ref(`sharedLists/${listId}/sharedWith/${email.replace(/\./g, '_')}`).set(permission);
+                emailInput.value = '';
+                showSuccess('Ro\'yxat ulashildi');
+            } catch (error) {
+                console.error('Share list error:', error);
+                showError('Ulashishda xatolik');
+            } finally {
+                const btn = document.querySelector(`#shareEmail${listId}`).nextElementSibling.nextElementSibling;
+                if (btn) btn.disabled = false;
+            }
         }
 
         function renderSharedUsers(list) {
-            const container = document.getElementById(`sharedUsers${list.id}`);
-            if (!container || !list.sharedWith) return;
+            try {
+                const container = document.getElementById(`sharedUsers${list.id}`);
+                if (!container || !list.sharedWith) return;
 
-            container.innerHTML = '';
-            Object.keys(list.sharedWith).forEach(email => {
-                const perm = list.sharedWith[email];
-                const div = document.createElement('div');
-                div.className = 'shared-user-item';
-                div.innerHTML = `
-                    <span>${email.replace(/_/g, '.')}</span>
-                    <span class="permission-badge perm-${perm}">
-                        ${perm === 'viewer' ? 'Kuzatuvchi' : perm === 'executor' ? 'Bajaruvchi' : 'Yaratuvchi'}
-                    </span>
-                `;
-                container.appendChild(div);
-            });
+                container.innerHTML = '';
+                Object.keys(list.sharedWith).forEach(email => {
+                    const perm = list.sharedWith[email];
+                    const div = document.createElement('div');
+                    div.className = 'shared-user-item';
+                    div.innerHTML = `
+                        <span>${sanitizeInput(email.replace(/_/g, '.'))}</span>
+                        <span class="permission-badge perm-${perm}">
+                            ${perm === 'viewer' ? 'Kuzatuvchi' : perm === 'executor' ? 'Bajaruvchi' : 'Yaratuvchi'}
+                        </span>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Render shared users error:', error);
+            }
         }
 
+        // ===== EVENT LISTENERS =====
+        
         document.getElementById('newListBtn').addEventListener('click', createList);
+        
         document.getElementById('newListInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') createList();
+            if (e.key === 'Enter') {
+                createList();
+            }
+        });
+
+        // ===== INITIALIZE =====
+        
+        // Handle online/offline status
+        window.addEventListener('online', () => {
+            if (currentUser && !isOnlineMode) {
+                showSuccess('Internet aloqasi qayta ulandi');
+                isOnlineMode = true;
+                syncLocalToFirebase();
+            }
+        });
+
+        window.addEventListener('offline', () => {
+            if (isOnlineMode) {
+                showError('Internet aloqasi yo\'q. Offline rejimda ishlayapsiz.');
+                isOnlineMode = false;
+            }
         });
     </script>
 </body>
