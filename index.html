@@ -794,10 +794,58 @@
             auth = firebase.auth();
             storage = firebase.storage();
             provider = new firebase.auth.GoogleAuthProvider();
+            
+            // Storage timeout va retry sozlamalari
+            storage.setMaxUploadRetryTime(60000); // 60 seconds
+            storage.setMaxOperationRetryTime(60000); // 60 seconds
+            
+            console.log('✅ Firebase initialized successfully');
         } catch (error) {
-            console.error('Firebase initialization error:', error);
-            showError('Firebase ishga tushurishda xatolik yuz berdi');
+            console.error('❌ Firebase initialization error:', error);
+            showError('Firebase ishga tushurishda xatolik yuz berdi. Sahifani yangilang.');
         }
+        
+        // Debug: Firebase Storage test function
+        async function testFirebaseStorage() {
+            if (!currentUser) {
+                console.log('⚠️ Test uchun login qiling');
+                return;
+            }
+            
+            try {
+                console.log('🧪 Firebase Storage test boshlandi...');
+                const testFile = new Blob(['test content'], { type: 'text/plain' });
+                const testRef = storage.ref(`test/${Date.now()}_test.txt`);
+                
+                await testRef.put(testFile);
+                console.log('✅ Upload SUCCESS');
+                
+                const url = await testRef.getDownloadURL();
+                console.log('✅ Download URL SUCCESS:', url);
+                
+                await testRef.delete();
+                console.log('✅ Delete SUCCESS');
+                
+                showSuccess('Firebase Storage test muvaffaqiyatli!');
+                return true;
+            } catch (error) {
+                console.error('❌ Firebase Storage test FAILED:', error);
+                console.log('Error code:', error.code);
+                console.log('Error message:', error.message);
+                
+                if (error.code === 'storage/unauthorized') {
+                    console.log('💡 Yechim: Firebase Storage Rules\'ni tekshiring');
+                } else if (error.message && error.message.includes('CORS')) {
+                    console.log('💡 Yechim: CORS konfiguratsiyasini sozlang');
+                }
+                
+                showError('Firebase Storage test xato: ' + error.code);
+                return false;
+            }
+        }
+        
+        // Console'da test qilish uchun global funksiya
+        window.testStorage = testFirebaseStorage;
 
         // ===== GLOBAL VARIABLES =====
         let currentUser = null;
@@ -1574,39 +1622,135 @@
                 if (!list || !list.tasks[index]) return;
                 
                 if (isOnlineMode) {
-                    const storageRef = storage.ref(`files/${currentUser.uid}/${Date.now()}_${file.name}`);
-                    const snapshot = await storageRef.put(file);
-                    const url = await snapshot.ref.getDownloadURL();
+                    // Custom metadata qo'shish
+                    const metadata = {
+                        contentType: file.type || 'application/octet-stream',
+                        customMetadata: {
+                            'uploadedBy': currentUser.uid,
+                            'uploadedAt': new Date().toISOString(),
+                            'taskId': `${listId}_${index}`
+                        }
+                    };
+
+                    // Unique va xavfsiz filename generatsiya
+                    const timestamp = Date.now();
+                    const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_').substring(0, 100);
+                    const fileName = `${timestamp}_${safeName}`;
+                    const filePath = `files/${currentUser.uid}/${fileName}`;
                     
-                    list.tasks[index].fileUrl = url;
-                    list.tasks[index].fileName = file.name;
-                    await saveData(listId, isShared);
-                    showSuccess('Fayl yuklandi');
+                    const storageRef = storage.ref(filePath);
+                    
+                    // Upload with progress tracking
+                    const uploadTask = storageRef.put(file, metadata);
+                    
+                    uploadTask.on('state_changed', 
+                        (snapshot) => {
+                            // Progress tracking
+                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            label.textContent = `${Math.round(progress)}%`;
+                        },
+                        (error) => {
+                            // Detailed error handling
+                            console.error('Upload error:', error);
+                            console.log('Error code:', error.code);
+                            console.log('Error message:', error.message);
+                            
+                            let errorMessage = 'Fayl yuklashda xatolik';
+                            
+                            if (error.code === 'storage/unauthorized') {
+                                errorMessage = 'Ruxsat yo\'q. Firebase Storage Rules\'ni tekshiring yoki qayta kiring.';
+                                setTimeout(() => {
+                                    if (confirm(errorMessage + '\n\nQayta kirishni xohlaysizmi?')) {
+                                        auth.signOut().then(() => {
+                                            window.location.reload();
+                                        });
+                                    }
+                                }, 100);
+                            } else if (error.code === 'storage/canceled') {
+                                errorMessage = 'Yuklash bekor qilindi';
+                            } else if (error.code === 'storage/quota-exceeded') {
+                                errorMessage = 'Storage limiti tugadi. Firebase Console\'da limitni oshiring.';
+                            } else if (error.code === 'storage/retry-limit-exceeded') {
+                                errorMessage = 'Network xatolik. Internet aloqasini tekshiring va qayta urinib ko\'ring.';
+                            } else if (error.code === 'storage/invalid-checksum') {
+                                errorMessage = 'Fayl buzilgan. Qayta yuklang.';
+                            } else if (error.code === 'storage/unknown') {
+                                errorMessage = 'Noma\'lum xatolik. CORS sozlamalarini tekshiring.';
+                                console.error('CORS muammosi bo\'lishi mumkin. Firebase Storage CORS konfiguratsiyasini tekshiring.');
+                            }
+                            
+                            showError(errorMessage);
+                            label.classList.remove('uploading');
+                            label.textContent = '📎 Fayl';
+                        },
+                        async () => {
+                            // Upload complete
+                            try {
+                                const url = await uploadTask.snapshot.ref.getDownloadURL();
+                                
+                                list.tasks[index].fileUrl = url;
+                                list.tasks[index].fileName = file.name;
+                                list.tasks[index].fileSize = file.size;
+                                list.tasks[index].fileType = file.type;
+                                list.tasks[index].uploadedAt = Date.now();
+                                
+                                await saveData(listId, isShared);
+                                renderLists();
+                                showSuccess('Fayl muvaffaqiyatli yuklandi!');
+                            } catch (error) {
+                                console.error('Get URL error:', error);
+                                showError('Fayl URL olishda xatolik. Qayta urinib ko\'ring.');
+                            }
+                        }
+                    );
                 } else {
-                    // Offline mode - base64
+                    // Offline mode - base64 (hajm cheklangan)
+                    if (file.size > 5 * 1024 * 1024) {
+                        showError('Offline rejimda fayl hajmi 5MB dan kichik bo\'lishi kerak!');
+                        input.value = '';
+                        label.classList.remove('uploading');
+                        label.textContent = '📎 Fayl';
+                        return;
+                    }
+                    
                     const reader = new FileReader();
                     reader.onload = async function(e) {
-                        list.tasks[index].fileUrl = e.target.result;
-                        list.tasks[index].fileName = file.name;
-                        saveToLocal();
-                        renderLists();
-                        showSuccess('Fayl yuklandi');
+                        try {
+                            list.tasks[index].fileUrl = e.target.result;
+                            list.tasks[index].fileName = file.name;
+                            list.tasks[index].fileSize = file.size;
+                            list.tasks[index].fileType = file.type;
+                            list.tasks[index].isOfflineFile = true;
+                            saveToLocal();
+                            renderLists();
+                            showSuccess('Fayl yuklandi (offline)');
+                        } catch (error) {
+                            console.error('Offline save error:', error);
+                            showError('Faylni saqlashda xatolik');
+                        }
                     };
-                    reader.onerror = function() {
+                    reader.onerror = function(error) {
+                        console.error('FileReader error:', error);
                         showError('Faylni o\'qishda xatolik');
                     };
                     reader.readAsDataURL(file);
                 }
-                
-                renderLists();
             } catch (error) {
                 console.error('Upload file error:', error);
-                showError('Fayl yuklashda xatolik');
-            } finally {
-                if (label) {
-                    label.classList.remove('uploading');
-                    label.textContent = '📎 Fayl';
+                let errorMsg = 'Fayl yuklashda xatolik';
+                
+                if (error.message && error.message.includes('CORS')) {
+                    errorMsg = 'CORS xatolik. Firebase Storage sozlamalarini tekshiring.';
                 }
+                
+                showError(errorMsg);
+            } finally {
+                setTimeout(() => {
+                    if (label) {
+                        label.classList.remove('uploading');
+                        label.textContent = '📎 Fayl';
+                    }
+                }, 500);
                 input.value = '';
             }
         }
