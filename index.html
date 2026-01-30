@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vazifalar Boshqaruvi</title>
+    <title>CheckBox Task</title>
     <style>
         :root {
             --primary: #667eea;
@@ -11,6 +11,7 @@
             --success: #28a745;
             --danger: #dc3545;
             --warning: #ffc107;
+            --info: #17a2b8;
             --bg-main: #f5f5f5;
             --bg-card: #ffffff;
             --text-main: #333;
@@ -42,7 +43,7 @@
         }
 
         .main-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -100,11 +101,6 @@
             background: var(--primary-dark);
         }
 
-        .login-btn:disabled, .logout-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
         .theme-toggle {
             display: flex;
             align-items: center;
@@ -113,17 +109,44 @@
             padding: 8px 15px;
             background: var(--bg-main);
             border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .theme-toggle:hover {
-            background: var(--border);
         }
 
         .header h1 {
             color: var(--primary);
             font-size: 28px;
             margin-bottom: 15px;
+        }
+
+        .tabs-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: var(--bg-main);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .stats-bar {
@@ -152,6 +175,30 @@
             margin-top: 4px;
         }
 
+        .filters-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 15px;
+            background: var(--bg-main);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            color: var(--text-main);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
         .search-wrapper {
             position: relative;
             margin-bottom: 15px;
@@ -163,7 +210,6 @@
             font-size: 15px;
             border: 2px solid var(--border);
             border-radius: 8px;
-            outline: none;
             background: var(--bg-card);
             color: var(--text-main);
         }
@@ -173,7 +219,6 @@
             left: 12px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-secondary);
         }
 
         .new-list-section {
@@ -186,19 +231,13 @@
             flex: 1;
             min-width: 200px;
             padding: 12px 15px;
-            font-size: 15px;
             border: 2px solid var(--border);
             border-radius: 8px;
-            outline: none;
             background: var(--bg-card);
             color: var(--text-main);
         }
 
-        .new-list-input.error {
-            border-color: var(--danger);
-        }
-
-        .new-list-btn {
+        .new-list-btn, .action-btn {
             padding: 12px 25px;
             background: var(--primary);
             color: white;
@@ -206,17 +245,11 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .new-list-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
         }
 
         .lists-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 20px;
         }
 
@@ -225,16 +258,10 @@
             border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            position: relative;
         }
 
         .list-card.shared {
             border: 2px solid var(--success);
-        }
-
-        .list-card.loading {
-            opacity: 0.6;
-            pointer-events: none;
         }
 
         .list-header {
@@ -253,21 +280,49 @@
             flex: 1;
             padding: 5px;
             color: var(--text-main);
-            border-radius: 6px;
         }
 
-        .list-title-edit:focus {
-            outline: 2px solid var(--primary);
+        .list-actions {
+            display: flex;
+            gap: 5px;
         }
 
-        .delete-list-btn {
+        .icon-btn {
             padding: 6px 10px;
-            background: var(--danger);
-            color: white;
+            background: var(--bg-main);
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
+            color: var(--text-main);
+        }
+
+        .delete-list-btn {
+            background: var(--danger);
+            color: white;
+        }
+
+        .tags-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-weight: bold;
         }
 
         .task-input-section {
@@ -280,29 +335,25 @@
         .task-input-row {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
         }
 
         .task-input {
             flex: 1;
+            min-width: 150px;
             padding: 10px 12px;
             border: 2px solid var(--border);
             border-radius: 8px;
             background: var(--bg-card);
             color: var(--text-main);
-            font-size: 14px;
         }
 
-        .task-input.error {
-            border-color: var(--danger);
-        }
-
-        .deadline-input {
+        .deadline-input, .recurring-select {
             padding: 10px 12px;
             border: 2px solid var(--border);
             border-radius: 8px;
             background: var(--bg-card);
             color: var(--text-main);
-            font-size: 13px;
             cursor: pointer;
         }
 
@@ -313,17 +364,11 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .add-task-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
         }
 
         .tasks-list {
             list-style: none;
-            max-height: 500px;
+            max-height: 600px;
             overflow-y: auto;
         }
 
@@ -333,6 +378,12 @@
             padding: 12px;
             margin-bottom: 8px;
             border-left: 3px solid transparent;
+            cursor: grab;
+            position: relative;
+        }
+
+        .task-item:active {
+            cursor: grabbing;
         }
 
         .task-item.completed {
@@ -344,21 +395,19 @@
         .task-item.priority-high { border-left-color: #ff6b35; }
         .task-item.priority-critical { border-left-color: #dc3545; }
 
+        .task-item.recurring::after {
+            content: '🔄';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 12px;
+        }
+
         .task-header {
             display: flex;
             align-items: flex-start;
             gap: 10px;
             margin-bottom: 8px;
-        }
-
-        .star-btn {
-            font-size: 16px;
-            cursor: pointer;
-            color: #ddd;
-        }
-
-        .star-btn.starred {
-            color: #ffc107;
         }
 
         .checkbox {
@@ -371,7 +420,6 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            margin-top: 2px;
         }
 
         .task-item.completed .checkbox {
@@ -396,13 +444,6 @@
             border: none;
             background: transparent;
             color: var(--text-main);
-            border-radius: 4px;
-            word-wrap: break-word;
-        }
-
-        .task-text-edit:focus {
-            outline: 2px solid var(--primary);
-            background: var(--bg-card);
         }
 
         .task-item.completed .task-text-edit {
@@ -432,6 +473,120 @@
             text-decoration: none;
         }
 
+        .task-time-spent {
+            color: var(--info);
+            font-weight: 600;
+        }
+
+        .subtasks-section {
+            margin-top: 10px;
+            padding-left: 30px;
+        }
+
+        .subtask-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px;
+            margin-bottom: 5px;
+            background: var(--bg-card);
+            border-radius: 5px;
+        }
+
+        .subtask-checkbox {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--primary);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .subtask-item.completed .subtask-checkbox {
+            background: var(--primary);
+        }
+
+        .subtask-text {
+            flex: 1;
+            font-size: 13px;
+        }
+
+        .subtask-item.completed .subtask-text {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .subtask-input-wrapper {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .subtask-input {
+            flex: 1;
+            padding: 6px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 12px;
+            background: var(--bg-card);
+            color: var(--text-main);
+        }
+
+        .comments-section {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        .comment-item {
+            padding: 8px;
+            margin-bottom: 8px;
+            background: var(--bg-card);
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .comment-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .comment-input-wrapper {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .comment-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 12px;
+            background: var(--bg-card);
+            color: var(--text-main);
+        }
+
+        .comment-btn {
+            padding: 8px 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
         .task-actions {
             display: flex;
             flex-wrap: wrap;
@@ -458,7 +613,6 @@
         .status-progress { background: #ffc107; color: black; }
         .status-review { background: #17a2b8; color: white; }
         .status-done { background: #28a745; color: white; }
-        .status-hold { background: #dc3545; color: white; }
 
         .file-input-label {
             padding: 4px 10px;
@@ -467,16 +621,24 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 11px;
-            display: inline-block;
-        }
-
-        .file-input-label.uploading {
-            opacity: 0.6;
-            cursor: not-allowed;
         }
 
         .file-input {
             display: none;
+        }
+
+        .timer-btn {
+            padding: 4px 10px;
+            background: var(--info);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .timer-btn.running {
+            background: var(--danger);
         }
 
         .delete-task-btn {
@@ -495,6 +657,32 @@
             border-top: 2px solid var(--border);
         }
 
+        .share-task-section {
+            margin-top: 10px;
+            padding: 10px;
+            background: var(--bg-main);
+            border-radius: 8px;
+        }
+
+        .share-task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .permission-info {
+            background: var(--bg-main);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .permission-info-item {
+            padding: 5px 0;
+        }
+
         .share-input-group {
             display: flex;
             gap: 6px;
@@ -510,11 +698,6 @@
             border-radius: 6px;
             background: var(--bg-card);
             color: var(--text-main);
-            font-size: 13px;
-        }
-
-        .share-email-input.error {
-            border-color: var(--danger);
         }
 
         .permission-select {
@@ -523,7 +706,6 @@
             border-radius: 6px;
             background: var(--bg-card);
             color: var(--text-main);
-            font-size: 13px;
         }
 
         .share-btn {
@@ -533,13 +715,6 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 13px;
-            white-space: nowrap;
-        }
-
-        .share-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
         }
 
         .shared-users {
@@ -564,44 +739,210 @@
             font-weight: 600;
         }
 
-        .perm-viewer { background: #17a2b8; color: white; }
-        .perm-executor { background: #ffc107; color: black; }
-        .perm-creator { background: #28a745; color: white; }
+        .perm-viewer { background: #6c757d; color: white; }
+        .perm-editor { background: #ffc107; color: black; }
+        .perm-manager { background: #28a745; color: white; }
 
-        .no-lists {
+        .calendar-container {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day-header {
             text-align: center;
-            padding: 60px 20px;
+            font-weight: 600;
+            padding: 10px;
+            background: var(--bg-main);
+            border-radius: 5px;
+        }
+
+        .calendar-day {
+            min-height: 100px;
+            padding: 5px;
+            background: var(--bg-main);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .calendar-day.today {
+            background: var(--primary);
+            color: white;
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+
+        .calendar-day-number {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .calendar-task-item {
+            font-size: 10px;
+            padding: 2px 4px;
+            background: var(--primary);
+            color: white;
+            border-radius: 3px;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .templates-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .template-card {
+            background: var(--bg-card);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid var(--border);
+        }
+
+        .template-card:hover {
+            border-color: var(--primary);
+        }
+
+        .template-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .template-description {
+            font-size: 12px;
             color: var(--text-secondary);
         }
 
-        .sync-notice {
-            background: var(--warning);
-            color: #000;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 13px;
-            display: none;
+        .analytics-container {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 12px;
         }
 
-        .error-notice {
-            background: var(--danger);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 13px;
-            display: none;
+        .chart-container {
+            margin-bottom: 30px;
         }
 
-        .success-notice {
-            background: var(--success);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
             margin-bottom: 15px;
-            font-size: 13px;
+        }
+
+        .notifications-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: 350px;
+            z-index: 10000;
+        }
+
+        .notification-item {
+            background: var(--bg-card);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-item.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .notification-item.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .notification-item.danger {
+            border-left: 4px solid var(--danger);
+        }
+
+        .modal {
             display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
         }
 
         .loading-overlay {
@@ -635,68 +976,13 @@
             100% { transform: rotate(360deg); }
         }
 
-        .error-text {
-            color: var(--danger);
-            font-size: 12px;
-            margin-top: 5px;
-        }
-
-        /* Mobile optimizations */
         @media (max-width: 768px) {
-            body {
-                padding: 5px;
-            }
-
-            .header {
-                padding: 15px;
-            }
-
-            .header h1 {
-                font-size: 22px;
-            }
-
             .lists-container {
                 grid-template-columns: 1fr;
             }
-
-            .user-section {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .theme-toggle {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .stats-bar {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .task-actions {
-                width: 100%;
-            }
-
-            .priority-select, .status-select {
-                flex: 1;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 20px;
-            }
-
-            .new-list-section {
-                flex-direction: column;
-            }
-
-            .new-list-input {
-                width: 100%;
-            }
-
-            .new-list-btn {
-                width: 100%;
+            .calendar-day {
+                min-height: 60px;
+                font-size: 12px;
             }
         }
     </style>
@@ -705,6 +991,8 @@
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
     </div>
+
+    <div class="notifications-panel" id="notificationsPanel"></div>
 
     <div class="main-container">
         <div class="header">
@@ -718,62 +1006,124 @@
                 </div>
             </div>
 
-            <div class="sync-notice" id="syncNotice">
-                ⚠️ Siz offline rejimda ishlayapsiz. Ma'lumotlar faqat shu qurilmada saqlanadi. Google orqali kiring va ma'lumotlaringiz bulutda saqlansin.
+            <h1>☑️ CheckBox Task</h1>
+
+            <div class="tabs-nav">
+                <button class="tab-btn active" onclick="switchTab('lists')">📋 Ro'yxatlar</button>
+                <button class="tab-btn" onclick="switchTab('calendar')">📅 Kalendar</button>
+                <button class="tab-btn" onclick="switchTab('analytics')">📊 Statistika</button>
+                <button class="tab-btn" onclick="switchTab('templates')">📑 Shablonlar</button>
             </div>
 
-            <div class="error-notice" id="errorNotice"></div>
-            <div class="success-notice" id="successNotice"></div>
+            <div id="listsTab" class="tab-content active">
+                <div class="stats-bar">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalTasks">0</div>
+                        <div class="stat-label">Jami</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="completedTasks">0</div>
+                        <div class="stat-label">Bajarilgan</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="pendingTasks">0</div>
+                        <div class="stat-label">Kutilmoqda</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="overdueTasks">0</div>
+                        <div class="stat-label">Muddati o'tgan</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="completionRate">0%</div>
+                        <div class="stat-label">Foiz</div>
+                    </div>
+                </div>
 
-            <h1>📋 Vazifalar Boshqaruvi</h1>
+                <div class="filters-section">
+                    <button class="filter-btn active" onclick="applyFilter('all')">Barchasi</button>
+                    <button class="filter-btn" onclick="applyFilter('high-priority')">🔴 Yuqori prioritet</button>
+                    <button class="filter-btn" onclick="applyFilter('overdue')">⚠️ Muddati o'tgan</button>
+                    <button class="filter-btn" onclick="applyFilter('today')">📅 Bugun</button>
+                </div>
 
-            <div class="stats-bar">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalTasks">0</div>
-                    <div class="stat-label">Jami</div>
+                <div class="search-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Vazifalarni qidirish...">
                 </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="completedTasks">0</div>
-                    <div class="stat-label">Bajarilgan</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="pendingTasks">0</div>
-                    <div class="stat-label">Kutilmoqda</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="completionRate">0%</div>
-                    <div class="stat-label">Foiz</div>
+                
+                <div class="new-list-section">
+                    <input type="text" id="newListInput" class="new-list-input" placeholder="Yangi ro'yxat nomi...">
+                    <button id="newListBtn" class="new-list-btn">+ Yaratish</button>
+                    <button class="action-btn" onclick="openImportModal()">📥 Import</button>
+                    <button class="action-btn" onclick="exportAllData()">📤 Export</button>
                 </div>
             </div>
 
-            <div class="search-wrapper">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="searchInput" class="search-input" placeholder="Vazifalarni qidirish...">
+            <div id="calendarTab" class="tab-content">
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <h2 id="calendarMonth"></h2>
+                        <div class="calendar-nav">
+                            <button class="action-btn" onclick="previousMonth()">◀ Oldingi</button>
+                            <button class="action-btn" onclick="currentMonth()">Bugun</button>
+                            <button class="action-btn" onclick="nextMonth()">Keyingi ▶</button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid"></div>
+                </div>
             </div>
-            
-            <div class="new-list-section">
-                <input type="text" id="newListInput" class="new-list-input" placeholder="Yangi ro'yxat nomi...">
-                <button id="newListBtn" class="new-list-btn">+ Yaratish</button>
+
+            <div id="analyticsTab" class="tab-content">
+                <div class="analytics-container">
+                    <div class="chart-container">
+                        <div class="chart-title">Kunlik faollik</div>
+                        <canvas id="activityChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title">Prioritet bo'yicha taqsimot</div>
+                        <canvas id="priorityChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title">Bajarilish statistikasi</div>
+                        <div id="completionStats"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="templatesTab" class="tab-content">
+                <div class="templates-container" id="templatesContainer"></div>
             </div>
         </div>
 
         <div id="listsContainer" class="lists-container"></div>
-        <div id="noLists" class="no-lists" style="display: none;">
-            <div style="font-size: 60px; margin-bottom: 15px;">📝</div>
-            <p>Hozircha ro'yxatlar yo'q. Yuqorida yangi ro'yxat yarating!</p>
+    </div>
+
+    <div class="modal" id="importModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Ma'lumotlarni import qilish</div>
+                <span class="modal-close" onclick="closeModal('importModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <input type="file" id="importFile" accept=".json">
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 10px;">
+                    JSON formatdagi faylni tanlang
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn" onclick="closeModal('importModal')" style="background: var(--text-secondary);">Bekor qilish</button>
+                <button class="action-btn" onclick="importData()">Import qilish</button>
+            </div>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-database-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-auth-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-storage-compat.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
     <script>
-        // ===== FIREBASE CONFIGURATION =====
-        // MUHIM: Production muhitda bu configni environment variables yoki secure backend'dan oling
-        // Bu faqat demo maqsadida. Real loyihada Firebase Security Rules ni to'g'ri sozlang!
         const firebaseConfig = {
             apiKey: "AIzaSyCwtHihZq8qFRCaCs2tJBC16cPG-bUWho0",
             authDomain: "checkbox-5b848.firebaseapp.com",
@@ -781,11 +1131,9 @@
             projectId: "checkbox-5b848",
             storageBucket: "checkbox-5b848.firebasestorage.app",
             messagingSenderId: "461550771942",
-            appId: "1:461550771942:web:53def1224b2f8ded95e527",
-            measurementId: "G-1VHZ91HQ72"
+            appId: "1:461550771942:web:53def1224b2f8ded95e527"
         };
 
-        // Firebase initialization with error handling
         let database, auth, storage, provider;
         
         try {
@@ -794,98 +1142,73 @@
             auth = firebase.auth();
             storage = firebase.storage();
             provider = new firebase.auth.GoogleAuthProvider();
-            
-            // Storage timeout va retry sozlamalari
-            storage.setMaxUploadRetryTime(60000); // 60 seconds
-            storage.setMaxOperationRetryTime(60000); // 60 seconds
-            
-            console.log('✅ Firebase initialized successfully');
         } catch (error) {
-            console.error('❌ Firebase initialization error:', error);
-            showError('Firebase ishga tushurishda xatolik yuz berdi. Sahifani yangilang.');
+            console.error('Firebase init error:', error);
         }
-        
-        // Debug: Firebase Storage test function
-        async function testFirebaseStorage() {
-            if (!currentUser) {
-                console.log('⚠️ Test uchun login qiling');
-                return;
-            }
-            
-            try {
-                console.log('🧪 Firebase Storage test boshlandi...');
-                const testFile = new Blob(['test content'], { type: 'text/plain' });
-                const testRef = storage.ref(`test/${Date.now()}_test.txt`);
-                
-                await testRef.put(testFile);
-                console.log('✅ Upload SUCCESS');
-                
-                const url = await testRef.getDownloadURL();
-                console.log('✅ Download URL SUCCESS:', url);
-                
-                await testRef.delete();
-                console.log('✅ Delete SUCCESS');
-                
-                showSuccess('Firebase Storage test muvaffaqiyatli!');
-                return true;
-            } catch (error) {
-                console.error('❌ Firebase Storage test FAILED:', error);
-                console.log('Error code:', error.code);
-                console.log('Error message:', error.message);
-                
-                if (error.code === 'storage/unauthorized') {
-                    console.log('💡 Yechim: Firebase Storage Rules\'ni tekshiring');
-                } else if (error.message && error.message.includes('CORS')) {
-                    console.log('💡 Yechim: CORS konfiguratsiyasini sozlang');
-                }
-                
-                showError('Firebase Storage test xato: ' + error.code);
-                return false;
-            }
-        }
-        
-        // Console'da test qilish uchun global funksiya
-        window.testStorage = testFirebaseStorage;
 
-        // ===== GLOBAL VARIABLES =====
         let currentUser = null;
         let lists = [];
         let searchQuery = '';
+        let currentFilter = 'all';
         let isOnlineMode = false;
-        let syncedListIds = new Set(); // Dublikatlarni oldini olish uchun
+        let timers = {};
+        let currentCalendarDate = new Date();
+        let activityChart = null;
+        let priorityChart = null;
 
-        // ===== UTILITY FUNCTIONS =====
-        
-        function showLoading(show = true) {
-            const overlay = document.getElementById('loadingOverlay');
-            if (show) {
-                overlay.classList.add('active');
-            } else {
-                overlay.classList.remove('active');
+        const templates = [
+            {
+                title: "Kundalik ish rejalari",
+                description: "Har kuni bajaradigan vazifalar",
+                tasks: [
+                    { text: "Email tekshirish", priority: "medium", status: "todo" },
+                    { text: "Kun rejasini tuzish", priority: "high", status: "todo" },
+                    { text: "Uchrashuvlar", priority: "medium", status: "todo" }
+                ]
+            },
+            {
+                title: "Loyiha boshqaruvi",
+                description: "Loyiha uchun standart vazifalar",
+                tasks: [
+                    { text: "Talablarni yig'ish", priority: "high", status: "backlog" },
+                    { text: "Dizayn yaratish", priority: "high", status: "backlog" },
+                    { text: "Dasturlash", priority: "critical", status: "backlog" },
+                    { text: "Testing", priority: "high", status: "backlog" },
+                    { text: "Deploy", priority: "medium", status: "backlog" }
+                ]
+            },
+            {
+                title: "Xaridlar ro'yxati",
+                description: "Do'kon uchun kerakli narsalar",
+                tasks: [
+                    { text: "Non", priority: "low", status: "todo" },
+                    { text: "Sut", priority: "low", status: "todo" },
+                    { text: "Meva va sabzavotlar", priority: "medium", status: "todo" }
+                ]
             }
+        ];
+
+        function showLoading(show = true) {
+            document.getElementById('loadingOverlay').classList.toggle('active', show);
         }
 
-        function showError(message, duration = 5000) {
-            const notice = document.getElementById('errorNotice');
-            notice.textContent = message;
-            notice.style.display = 'block';
+        function showNotification(message, type = 'success', duration = 3000) {
+            const panel = document.getElementById('notificationsPanel');
+            const notification = document.createElement('div');
+            notification.className = `notification-item ${type}`;
+            notification.innerHTML = `<div style="font-weight: 600;">${message}</div>`;
+            panel.appendChild(notification);
+            
             setTimeout(() => {
-                notice.style.display = 'none';
+                notification.remove();
             }, duration);
         }
 
-        function showSuccess(message, duration = 3000) {
-            const notice = document.getElementById('successNotice');
-            notice.textContent = message;
-            notice.style.display = 'block';
-            setTimeout(() => {
-                notice.style.display = 'none';
-            }, duration);
-        }
+        function showError(msg) { showNotification(msg, 'danger', 5000); }
+        function showSuccess(msg) { showNotification(msg, 'success', 3000); }
 
         function validateEmail(email) {
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(email.toLowerCase());
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         }
 
         function sanitizeInput(input) {
@@ -894,51 +1217,78 @@
             return div.innerHTML;
         }
 
-        function validateFileSize(file, maxSizeMB = 10) {
-            const maxSize = maxSizeMB * 1024 * 1024;
-            return file.size <= maxSize;
-        }
-
-        function validateFileType(file, allowedTypes = ['image/*', 'application/pdf', '.doc', '.docx', '.txt']) {
-            // Basic file type validation
-            return true; // Bu yerda kerakli file type validation qo'shing
-        }
-
-        // ===== THEME FUNCTIONS =====
-        
         function toggleTheme() {
-            const currentTheme = document.body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            const current = document.body.getAttribute('data-theme');
+            const newTheme = current === 'light' ? 'dark' : 'light';
             document.body.setAttribute('data-theme', newTheme);
             document.getElementById('themeIcon').textContent = newTheme === 'light' ? '🌙' : '☀️';
             document.getElementById('themeText').textContent = newTheme === 'light' ? 'Qorong\'i rejim' : 'Yorug\' rejim';
-            
-            try {
-                localStorage.setItem('theme', newTheme);
-            } catch (error) {
-                console.error('Theme save error:', error);
-            }
+            localStorage.setItem('theme', newTheme);
         }
 
-        // Load saved theme
         try {
             const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                toggleTheme();
-            }
-        } catch (error) {
-            console.error('Theme load error:', error);
+            if (savedTheme === 'dark') toggleTheme();
+        } catch (e) {}
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'calendar') renderCalendar();
+            else if (tabName === 'analytics') renderAnalytics();
+            else if (tabName === 'templates') renderTemplates();
         }
 
-        // ===== SEARCH FUNCTION =====
-        
         document.getElementById('searchInput').addEventListener('input', (e) => {
             searchQuery = e.target.value.toLowerCase();
             renderLists();
         });
 
-        // ===== AUTHENTICATION =====
-        
+        function applyFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderLists();
+        }
+
+        function filterTasks(tasks) {
+            if (!tasks) return [];
+            
+            let filtered = tasks;
+            
+            if (searchQuery) {
+                filtered = filtered.filter(task => 
+                    task.text.toLowerCase().includes(searchQuery) ||
+                    (task.tags && task.tags.some(tag => tag.toLowerCase().includes(searchQuery)))
+                );
+            }
+            
+            const now = new Date();
+            switch (currentFilter) {
+                case 'high-priority':
+                    filtered = filtered.filter(t => t.priority === 'high' || t.priority === 'critical');
+                    break;
+                case 'overdue':
+                    filtered = filtered.filter(t => {
+                        if (!t.deadline || t.completed) return false;
+                        return new Date(t.deadline) < now;
+                    });
+                    break;
+                case 'today':
+                    filtered = filtered.filter(t => {
+                        if (!t.deadline) return false;
+                        return new Date(t.deadline).toDateString() === now.toDateString();
+                    });
+                    break;
+            }
+            
+            return filtered;
+        }
+
         document.getElementById('loginBtn').addEventListener('click', async () => {
             const btn = document.getElementById('loginBtn');
             btn.disabled = true;
@@ -949,18 +1299,7 @@
                 await auth.signInWithPopup(provider);
                 showSuccess('Muvaffaqiyatli kirdingiz!');
             } catch (error) {
-                console.error('Login error:', error);
-                let errorMessage = 'Kirishda xatolik yuz berdi!';
-                
-                if (error.code === 'auth/popup-closed-by-user') {
-                    errorMessage = 'Kirish bekor qilindi';
-                } else if (error.code === 'auth/network-request-failed') {
-                    errorMessage = 'Internet aloqasi yo\'q';
-                } else if (error.code === 'auth/unauthorized-domain') {
-                    errorMessage = 'Bu domen uchun avtorizatsiya yo\'q';
-                }
-                
-                showError(errorMessage);
+                showError('Kirishda xatolik: ' + error.message);
             } finally {
                 btn.disabled = false;
                 btn.textContent = 'Google orqali kirish';
@@ -974,12 +1313,11 @@
             
             if (user) {
                 isOnlineMode = true;
-                document.getElementById('syncNotice').style.display = 'none';
                 syncLocalToFirebase();
                 loadLists();
+                checkDeadlines();
             } else {
                 isOnlineMode = false;
-                document.getElementById('syncNotice').style.display = 'block';
                 loadLocalLists();
             }
         });
@@ -988,7 +1326,7 @@
             const userInfo = document.getElementById('userInfo');
             if (currentUser) {
                 userInfo.innerHTML = `
-                    <img src="${currentUser.photoURL}" class="user-avatar" alt="Avatar" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2245%22 height=%2245%22><rect width=%22100%%22 height=%22100%%22 fill=%22%23667eea%22/><text x=%2250%%22 y=%2250%%22 font-size=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22>${currentUser.displayName.charAt(0)}</text></svg>'">
+                    <img src="${currentUser.photoURL}" class="user-avatar" alt="Avatar">
                     <div>
                         <div class="user-name">${sanitizeInput(currentUser.displayName)}</div>
                         <div style="font-size: 11px; color: var(--text-secondary)">${sanitizeInput(currentUser.email)}</div>
@@ -999,32 +1337,44 @@
         }
 
         function logout() {
-            if (confirm('Chiqishdan oldin ma\'lumotlaringiz saqlanganligiga ishonchingiz komilmi?')) {
-                showLoading(true);
-                auth.signOut().then(() => {
-                    lists = [];
-                    syncedListIds.clear();
-                    renderLists();
-                    showSuccess('Chiqish muvaffaqiyatli!');
-                }).catch(error => {
-                    console.error('Logout error:', error);
-                    showError('Chiqishda xatolik yuz berdi');
-                }).finally(() => {
-                    showLoading(false);
-                });
+            if (confirm('Chiqishni xohlaysizmi?')) {
+                auth.signOut();
             }
         }
 
-        // ===== LOCAL STORAGE FUNCTIONS =====
-        
+        function checkDeadlines() {
+            if (!lists.length) return;
+            
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            lists.forEach(list => {
+                if (!list.tasks) return;
+                
+                list.tasks.forEach(task => {
+                    if (task.completed || !task.deadline) return;
+                    
+                    const deadline = new Date(task.deadline);
+                    
+                    if (deadline < now) {
+                        showNotification(`⚠️ Muddati o'tgan: ${task.text}`, 'danger', 5000);
+                    } else if (deadline.toDateString() === tomorrow.toDateString()) {
+                        showNotification(`📅 Ertaga: ${task.text}`, 'warning', 5000);
+                    } else if (deadline.toDateString() === now.toDateString()) {
+                        showNotification(`🔔 Bugun: ${task.text}`, 'warning', 5000);
+                    }
+                });
+            });
+        }
+
+        setInterval(checkDeadlines, 3600000);
+
         function saveToLocal() {
             try {
                 localStorage.setItem('localLists', JSON.stringify(lists));
             } catch (error) {
-                console.error('Local save error:', error);
-                if (error.name === 'QuotaExceededError') {
-                    showError('Xotira to\'ldi! Ba\'zi ma\'lumotlar saqlanmadi.');
-                }
+                showError('Xotirada saqlashda xatolik');
             }
         }
 
@@ -1035,8 +1385,6 @@
                 updateStats();
                 renderLists();
             } catch (error) {
-                console.error('Local load error:', error);
-                showError('Lokal ma\'lumotlarni yuklashda xatolik');
                 lists = [];
             }
         }
@@ -1047,98 +1395,105 @@
                 if (localData && currentUser) {
                     const localLists = JSON.parse(localData);
                     if (localLists.length > 0) {
-                        if (confirm(`Sizda ${localLists.length} ta offline ro\'yxat bor. Ularni bulutga yuklashni xohlaysizmi?`)) {
+                        if (confirm(`Sizda ${localLists.length} ta offline ro'yxat bor. Ularni bulutga yuklashni xohlaysizmi?`)) {
                             showLoading(true);
                             
                             for (const list of localLists) {
-                                // Dublikat tekshirish
-                                const listHash = `${list.title}_${list.createdAt}`;
-                                if (!syncedListIds.has(listHash)) {
-                                    try {
-                                        await database.ref(`users/${currentUser.uid}/lists`).push({
-                                            ...list,
-                                            owner: currentUser.uid,
-                                            ownerName: currentUser.displayName,
-                                            createdAt: list.createdAt || Date.now(),
-                                            syncedAt: Date.now()
-                                        });
-                                        syncedListIds.add(listHash);
-                                    } catch (error) {
-                                        console.error('Sync error for list:', error);
-                                    }
-                                }
+                                await database.ref(`users/${currentUser.uid}/lists`).push({
+                                    ...list,
+                                    owner: currentUser.uid,
+                                    ownerName: currentUser.displayName
+                                });
                             }
                             
                             localStorage.removeItem('localLists');
-                            showSuccess('Ma\'lumotlar muvaffaqiyatli yuklandi!');
+                            showSuccess('Ma\'lumotlar bulutga yuklandi!');
                         }
                     }
                 }
             } catch (error) {
-                console.error('Sync error:', error);
-                showError('Sync qilishda xatolik yuz berdi');
+                showError('Sinxronizatsiyada xatolik');
             } finally {
                 showLoading(false);
             }
         }
 
-        // ===== FIREBASE DATA LOADING =====
-        
         function loadLists() {
             if (!currentUser) return;
 
-            try {
-                database.ref(`users/${currentUser.uid}/lists`).on('value', snapshot => {
-                    const privateLists = [];
-                    const data = snapshot.val();
+            database.ref(`users/${currentUser.uid}/lists`).on('value', snapshot => {
+                const privateLists = [];
+                const data = snapshot.val();
+                
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        privateLists.push({ ...data[key], id: key, isShared: false });
+                    });
+                }
+                
+                database.ref('sharedLists').once('value', sharedSnapshot => {
+                    const sharedLists = [];
+                    const sharedData = sharedSnapshot.val();
                     
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            privateLists.push({ ...data[key], id: key, isShared: false });
+                    if (sharedData) {
+                        Object.keys(sharedData).forEach(key => {
+                            const list = sharedData[key];
+                            if (list.owner === currentUser.uid || 
+                                (list.sharedWith && list.sharedWith[currentUser.email.replace(/\./g, '_')])) {
+                                sharedLists.push({ ...list, id: key, isShared: true });
+                            }
                         });
                     }
                     
-                    database.ref('sharedLists').once('value', sharedSnapshot => {
-                        const sharedLists = [];
-                        const sharedData = sharedSnapshot.val();
+                    // Load shared tasks
+                    database.ref('sharedTasks').once('value', sharedTasksSnapshot => {
+                        const sharedTasksData = sharedTasksSnapshot.val();
                         
-                        if (sharedData) {
-                            Object.keys(sharedData).forEach(key => {
-                                const list = sharedData[key];
-                                if (list.owner === currentUser.uid || 
-                                    (list.sharedWith && list.sharedWith[currentUser.email.replace(/\./g, '_')])) {
-                                    sharedLists.push({ ...list, id: key, isShared: true });
+                        lists = [...privateLists, ...sharedLists];
+                        
+                        // Add shared tasks to lists
+                        if (sharedTasksData) {
+                            Object.keys(sharedTasksData).forEach(taskKey => {
+                                const sharedTask = sharedTasksData[taskKey];
+                                if (sharedTask.sharedWith && sharedTask.sharedWith[currentUser.email.replace(/\./g, '_')]) {
+                                    // Find the list and add the task
+                                    const list = lists.find(l => l.id === sharedTask.listId);
+                                    if (list && list.tasks) {
+                                        const taskExists = list.tasks.some(t => t.sharedTaskId === taskKey);
+                                        if (!taskExists) {
+                                            list.tasks.push({
+                                                ...sharedTask,
+                                                sharedTaskId: taskKey,
+                                                isSharedTask: true
+                                            });
+                                        }
+                                    }
                                 }
                             });
                         }
                         
-                        lists = [...privateLists, ...sharedLists];
                         updateStats();
                         renderLists();
-                    }, error => {
-                        console.error('Shared lists load error:', error);
-                        showError('Ulashilgan ro\'yxatlarni yuklashda xatolik');
                     });
-                }, error => {
-                    console.error('Lists load error:', error);
-                    showError('Ro\'yxatlarni yuklashda xatolik');
                 });
-            } catch (error) {
-                console.error('Load lists error:', error);
-                showError('Ma\'lumotlarni yuklashda xatolik');
-            }
+            });
         }
 
-        // ===== STATISTICS =====
-        
         function updateStats() {
             let total = 0;
             let completed = 0;
+            let overdue = 0;
+            const now = new Date();
 
             lists.forEach(list => {
                 if (list.tasks) {
                     total += list.tasks.length;
-                    completed += list.tasks.filter(t => t.completed).length;
+                    list.tasks.forEach(task => {
+                        if (task.completed) completed++;
+                        if (task.deadline && !task.completed && new Date(task.deadline) < now) {
+                            overdue++;
+                        }
+                    });
                 }
             });
 
@@ -1148,43 +1503,55 @@
             document.getElementById('totalTasks').textContent = total;
             document.getElementById('completedTasks').textContent = completed;
             document.getElementById('pendingTasks').textContent = pending;
+            document.getElementById('overdueTasks').textContent = overdue;
             document.getElementById('completionRate').textContent = rate + '%';
         }
 
-        // ===== RENDER FUNCTIONS =====
-        
+        function getPermission(list) {
+            if (!isOnlineMode) return 'manager';
+            if (!currentUser) return 'viewer';
+            if (list.owner === currentUser.uid) return 'manager';
+            
+            if (list.sharedWith && list.sharedWith[currentUser.email.replace(/\./g, '_')]) {
+                return list.sharedWith[currentUser.email.replace(/\./g, '_')];
+            }
+            
+            return 'viewer';
+        }
+
+        function getTaskPermission(task) {
+            if (!isOnlineMode) return 'manager';
+            if (!currentUser) return 'viewer';
+            if (task.createdBy === currentUser.uid) return 'manager';
+            
+            if (task.isSharedTask && task.sharedWith && task.sharedWith[currentUser.email.replace(/\./g, '_')]) {
+                return task.sharedWith[currentUser.email.replace(/\./g, '_')];
+            }
+            
+            return 'viewer';
+        }
+
+        function canEdit(perm) {
+            return ['editor', 'manager'].includes(perm);
+        }
+
+        function canManage(perm) {
+            return perm === 'manager';
+        }
+
         function renderLists() {
             const container = document.getElementById('listsContainer');
-            const noLists = document.getElementById('noLists');
 
-            let filteredLists = lists;
-            
-            if (searchQuery) {
-                filteredLists = lists.filter(list => {
-                    const titleMatch = list.title.toLowerCase().includes(searchQuery);
-                    const taskMatch = list.tasks && list.tasks.some(task => 
-                        task.text.toLowerCase().includes(searchQuery)
-                    );
-                    return titleMatch || taskMatch;
-                });
-            }
-
-            if (filteredLists.length === 0) {
-                container.innerHTML = '';
-                noLists.style.display = 'block';
+            if (lists.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:60px;color:var(--text-secondary)"><div style="font-size:60px">📝</div><p>Hozircha ro\'yxatlar yo\'q</p></div>';
                 return;
             }
 
-            noLists.style.display = 'none';
             container.innerHTML = '';
 
-            filteredLists.forEach(list => {
-                try {
-                    const card = createListCard(list);
-                    container.appendChild(card);
-                } catch (error) {
-                    console.error('Render list error:', error);
-                }
+            lists.forEach(list => {
+                const card = createListCard(list);
+                container.appendChild(card);
             });
         }
 
@@ -1193,44 +1560,64 @@
             card.className = `list-card ${list.isShared ? 'shared' : ''}`;
 
             const permission = getPermission(list);
-            const canEdit = permission === 'creator' || !isOnlineMode;
-            const canCheck = permission !== 'viewer' || !isOnlineMode;
+            const filteredTasks = filterTasks(list.tasks || []);
 
-            const sortedTasks = (list.tasks || []).sort((a, b) => {
-                if (a.starred !== b.starred) return a.starred ? -1 : 1;
+            const sortedTasks = filteredTasks.sort((a, b) => {
                 if (a.completed === b.completed) return 0;
                 return a.completed ? 1 : -1;
             });
 
+            const tagsHTML = list.tags ? list.tags.map(tag => 
+                `<span class="tag">${sanitizeInput(tag)} ${canManage(permission) ? `<span class="tag-remove" onclick="removeListTag('${list.id}', '${tag}', ${list.isShared})">×</span>` : ''}</span>`
+            ).join('') : '';
+
             card.innerHTML = `
                 <div class="list-header">
                     <input type="text" class="list-title-edit" value="${sanitizeInput(list.title)}" 
-                        ${canEdit ? '' : 'readonly'} 
-                        onblur="updateListTitle('${list.id}', this.value, ${list.isShared})"
-                        maxlength="100">
-                    ${canEdit ? `<button class="delete-list-btn" onclick="deleteList('${list.id}', ${list.isShared})">🗑️</button>` : ''}
+                        ${canManage(permission) ? '' : 'readonly'} 
+                        onblur="updateListTitle('${list.id}', this.value, ${list.isShared})">
+                    <div class="list-actions">
+                        ${canManage(permission) ? `
+                            <button class="icon-btn" onclick="openTagModal('${list.id}', ${list.isShared})" title="Teglar">🏷️</button>
+                            <button class="icon-btn" onclick="duplicateList('${list.id}')" title="Nusxa olish">📋</button>
+                            <button class="icon-btn delete-list-btn" onclick="deleteList('${list.id}', ${list.isShared})">🗑️</button>
+                        ` : ''}
+                    </div>
                 </div>
                 
-                ${canEdit ? `
+                ${tagsHTML ? `<div class="tags-section">${tagsHTML}</div>` : ''}
+                
+                ${canManage(permission) ? `
                 <div class="task-input-section">
                     <div class="task-input-row">
-                        <input type="text" class="task-input" id="taskInput${list.id}" placeholder="Yangi vazifa..." maxlength="500">
+                        <input type="text" class="task-input" id="taskInput${list.id}" placeholder="Yangi vazifa...">
                         <input type="date" class="deadline-input" id="deadlineInput${list.id}">
+                        <select class="recurring-select" id="recurringSelect${list.id}">
+                            <option value="">Bir marta</option>
+                            <option value="daily">Har kuni</option>
+                            <option value="weekly">Har hafta</option>
+                            <option value="monthly">Har oy</option>
+                        </select>
                     </div>
                     <button class="add-task-btn" onclick="addTask('${list.id}', ${list.isShared})">+ Qo'shish</button>
                 </div>` : ''}
                 
                 <ul class="tasks-list" id="tasksList${list.id}"></ul>
                 
-                ${canEdit && list.isShared && isOnlineMode ? `
+                ${canManage(permission) && list.isShared ? `
                 <div class="share-section">
-                    <strong>👥 Ulashish:</strong>
+                    <strong>👥 Ro'yxatni ulashish:</strong>
+                    <div class="permission-info">
+                        <div class="permission-info-item">👁️ <strong>Kuzatuvchi:</strong> Faqat ko'rish</div>
+                        <div class="permission-info-item">✏️ <strong>Tahrirlovchi:</strong> Vazifalarni belgilash, fayl yuklash, komment</div>
+                        <div class="permission-info-item">⚙️ <strong>Boshqaruvchi:</strong> To'liq nazorat</div>
+                    </div>
                     <div class="share-input-group">
-                        <input type="email" class="share-email-input" id="shareEmail${list.id}" placeholder="Email manzili">
+                        <input type="email" class="share-email-input" id="shareEmail${list.id}" placeholder="Email">
                         <select class="permission-select" id="sharePerm${list.id}">
                             <option value="viewer">Kuzatuvchi</option>
-                            <option value="executor">Bajaruvchi</option>
-                            <option value="creator">Yaratuvchi</option>
+                            <option value="editor">Tahrirlovchi</option>
+                            <option value="manager">Boshqaruvchi</option>
                         </select>
                         <button class="share-btn" onclick="shareList('${list.id}')">Ulashish</button>
                     </div>
@@ -1240,14 +1627,8 @@
 
             const tasksList = card.querySelector(`#tasksList${list.id}`);
             sortedTasks.forEach((task, index) => {
-                if (!searchQuery || task.text.toLowerCase().includes(searchQuery)) {
-                    try {
-                        const taskItem = createTaskItem(task, index, list.id, list.isShared, canCheck, canEdit);
-                        tasksList.appendChild(taskItem);
-                    } catch (error) {
-                        console.error('Create task item error:', error);
-                    }
-                }
+                const taskItem = createTaskItem(task, index, list.id, list.isShared, permission);
+                tasksList.appendChild(taskItem);
             });
 
             if (list.isShared && list.sharedWith) {
@@ -1257,56 +1638,124 @@
             return card;
         }
 
-        function createTaskItem(task, index, listId, isShared, canCheck, canEdit) {
+        function createTaskItem(task, index, listId, isShared, listPermission) {
             const li = document.createElement('li');
-            li.className = `task-item ${task.completed ? 'completed' : ''} priority-${task.priority || 'medium'}`;
+            const taskPermission = task.isSharedTask ? getTaskPermission(task) : listPermission;
+            
+            li.className = `task-item ${task.completed ? 'completed' : ''} priority-${task.priority || 'medium'} ${task.recurring ? 'recurring' : ''}`;
 
             const now = new Date();
             const deadline = task.deadline ? new Date(task.deadline) : null;
             const isOverdue = deadline && deadline < now && !task.completed;
 
+            const subtasksHTML = task.subtasks ? task.subtasks.map((subtask, subIndex) => `
+                <div class="subtask-item ${subtask.completed ? 'completed' : ''}">
+                    <div class="subtask-checkbox" ${canEdit(taskPermission) ? `onclick="toggleSubtask('${listId}', ${index}, ${subIndex}, ${isShared})"` : ''}></div>
+                    <span class="subtask-text">${sanitizeInput(subtask.text)}</span>
+                    ${canEdit(taskPermission) ? `<button class="delete-task-btn" onclick="deleteSubtask('${listId}', ${index}, ${subIndex}, ${isShared})" style="font-size:10px;padding:2px 6px">×</button>` : ''}
+                </div>
+            `).join('') : '';
+
+            const commentsHTML = task.comments ? task.comments.map(comment => `
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <span class="comment-author">${sanitizeInput(comment.author)}</span>
+                        <span class="comment-time">${formatDateTime(comment.timestamp)}</span>
+                    </div>
+                    <div class="comment-text">${sanitizeInput(comment.text)}</div>
+                </div>
+            `).join('') : '';
+
+            const sharedTaskUsers = task.isSharedTask && task.sharedWith ? Object.keys(task.sharedWith).map(email => {
+                const perm = task.sharedWith[email];
+                return `
+                    <div class="shared-user-item">
+                        <span>${sanitizeInput(email.replace(/_/g, '.'))}</span>
+                        <span class="permission-badge perm-${perm}">
+                            ${perm === 'viewer' ? '👁️ Kuzatuvchi' : perm === 'editor' ? '✏️ Tahrirlovchi' : '⚙️ Boshqaruvchi'}
+                        </span>
+                    </div>
+                `;
+            }).join('') : '';
+
             li.innerHTML = `
                 <div class="task-header">
-                    ${canEdit ? `<span class="star-btn ${task.starred ? 'starred' : ''}" onclick="toggleStar('${listId}', ${index}, ${isShared})">⭐</span>` : ''}
-                    <div class="checkbox" ${canCheck ? `onclick="toggleTask('${listId}', ${index}, ${isShared})"` : ''}></div>
+                    <div class="checkbox" ${canEdit(taskPermission) ? `onclick="toggleTask('${listId}', ${index}, ${isShared})"` : ''}></div>
                     <div class="task-content">
                         <input type="text" class="task-text-edit" value="${sanitizeInput(task.text)}" 
-                            ${canEdit ? '' : 'readonly'}
-                            onblur="updateTaskText('${listId}', ${index}, this.value, ${isShared})"
-                            maxlength="500">
+                            ${canManage(taskPermission) ? '' : 'readonly'}
+                            onblur="updateTaskText('${listId}', ${index}, this.value, ${isShared})">
                         <div class="task-meta">
                             ${task.deadline ? `<span class="task-deadline ${isOverdue ? 'overdue' : ''}">📅 ${formatDate(task.deadline)} ${isOverdue ? '⚠️' : ''}</span>` : ''}
-                            ${task.fileName ? `<a href="${task.fileUrl}" class="task-file" target="_blank" download="${sanitizeInput(task.fileName)}">📎 ${sanitizeInput(task.fileName)}</a>` : ''}
+                            ${task.fileName ? `<a href="${task.fileUrl}" class="task-file" target="_blank">📎 ${sanitizeInput(task.fileName)}</a>` : ''}
+                            ${task.timeSpent ? `<span class="task-time-spent">⏱️ ${formatTime(task.timeSpent)}</span>` : ''}
+                            ${task.recurring ? `<span style="color:var(--info)">🔄 ${task.recurring === 'daily' ? 'Har kuni' : task.recurring === 'weekly' ? 'Har hafta' : 'Har oy'}</span>` : ''}
+                            ${task.isSharedTask ? `<span style="color:var(--success);font-weight:600">👥 Ulashilgan vazifa</span>` : ''}
                         </div>
+                        
+                        ${subtasksHTML || canManage(taskPermission) ? `
+                        <div class="subtasks-section">
+                            ${subtasksHTML}
+                            ${canManage(taskPermission) ? `
+                            <div class="subtask-input-wrapper">
+                                <input type="text" class="subtask-input" id="subtaskInput${listId}${index}" placeholder="Quyi vazifa...">
+                                <button class="comment-btn" onclick="addSubtask('${listId}', ${index}, ${isShared})">+</button>
+                            </div>` : ''}
+                        </div>` : ''}
+                        
+                        ${commentsHTML || canEdit(taskPermission) ? `
+                        <div class="comments-section">
+                            <strong style="font-size:12px">💬 Izohlar:</strong>
+                            ${commentsHTML}
+                            ${canEdit(taskPermission) ? `
+                            <div class="comment-input-wrapper">
+                                <input type="text" class="comment-input" id="commentInput${listId}${index}" placeholder="Izoh...">
+                                <button class="comment-btn" onclick="addComment('${listId}', ${index}, ${isShared})">Yuborish</button>
+                            </div>` : ''}
+                        </div>` : ''}
+
+                        ${canManage(taskPermission) && !task.isSharedTask ? `
+                        <div class="share-task-section">
+                            <div class="share-task-header">
+                                <strong style="font-size:12px">👥 Vazifani ulashish:</strong>
+                            </div>
+                            <div class="share-input-group">
+                                <input type="email" class="share-email-input" id="shareTaskEmail${listId}${index}" placeholder="Email" style="font-size:11px;padding:6px">
+                                <select class="permission-select" id="shareTaskPerm${listId}${index}" style="font-size:11px;padding:6px">
+                                    <option value="viewer">Kuzatuvchi</option>
+                                    <option value="editor">Tahrirlovchi</option>
+                                    <option value="manager">Boshqaruvchi</option>
+                                </select>
+                                <button class="share-btn" onclick="shareTask('${listId}', ${index})" style="font-size:11px;padding:6px 12px">Ulashish</button>
+                            </div>
+                            ${sharedTaskUsers ? `<div class="shared-users">${sharedTaskUsers}</div>` : ''}
+                        </div>` : ''}
                     </div>
                 </div>
                 <div class="task-actions">
-                    ${canEdit ? `
-                    <select class="priority-select priority-${task.priority || 'medium'}" 
-                        onchange="updateTaskPriority('${listId}', ${index}, this.value, ${isShared})">
+                    ${canManage(taskPermission) ? `
+                    <select class="priority-select priority-${task.priority || 'medium'}" onchange="updateTaskPriority('${listId}', ${index}, this.value, ${isShared})">
                         <option value="low" ${task.priority === 'low' ? 'selected' : ''}>Past</option>
                         <option value="medium" ${!task.priority || task.priority === 'medium' ? 'selected' : ''}>O'rta</option>
                         <option value="high" ${task.priority === 'high' ? 'selected' : ''}>Yuqori</option>
                         <option value="critical" ${task.priority === 'critical' ? 'selected' : ''}>Kritik</option>
-                    </select>
-                    ` : ''}
-                    <select class="status-select status-${task.status || 'todo'}" 
-                        ${canEdit ? '' : 'disabled'}
-                        onchange="updateTaskStatus('${listId}', ${index}, this.value, ${isShared})">
+                    </select>` : ''}
+                    <select class="status-select status-${task.status || 'todo'}" ${canManage(taskPermission) ? '' : 'disabled'} onchange="updateTaskStatus('${listId}', ${index}, this.value, ${isShared})">
                         <option value="backlog" ${task.status === 'backlog' ? 'selected' : ''}>Backlog</option>
                         <option value="todo" ${!task.status || task.status === 'todo' ? 'selected' : ''}>To Do</option>
                         <option value="progress" ${task.status === 'progress' ? 'selected' : ''}>In Progress</option>
                         <option value="review" ${task.status === 'review' ? 'selected' : ''}>Review</option>
                         <option value="done" ${task.status === 'done' ? 'selected' : ''}>Done</option>
                     </select>
-                    ${canEdit ? `
+                    ${canEdit(taskPermission) ? `
                     <label class="file-input-label" id="fileLabel${listId}${index}">
                         📎 Fayl
-                        <input type="file" class="file-input" onchange="uploadFile('${listId}', ${index}, this, ${isShared})" 
-                            accept="image/*,.pdf,.doc,.docx,.txt,.xlsx,.xls,.zip">
+                        <input type="file" class="file-input" onchange="uploadFile('${listId}', ${index}, this, ${isShared})" accept="image/*,video/*,.pdf,.doc,.docx">
                     </label>
-                    <button class="delete-task-btn" onclick="deleteTask('${listId}', ${index}, ${isShared})">🗑️</button>
-                    ` : ''}
+                    <button class="timer-btn ${timers[listId + '_' + index] ? 'running' : ''}" id="timerBtn${listId}${index}" onclick="toggleTimer('${listId}', ${index}, ${isShared})">
+                        ${timers[listId + '_' + index] ? '⏸️ To\'xtatish' : '▶️ Boshlash'}
+                    </button>` : ''}
+                    ${canManage(taskPermission) ? `<button class="delete-task-btn" onclick="deleteTask('${listId}', ${index}, ${isShared})">🗑️</button>` : ''}
                 </div>
             `;
 
@@ -1314,38 +1763,51 @@
         }
 
         function formatDate(dateString) {
-            try {
-                const date = new Date(dateString);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const taskDate = new Date(date);
-                taskDate.setHours(0, 0, 0, 0);
+            const date = new Date(dateString);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const taskDate = new Date(date);
+            taskDate.setHours(0, 0, 0, 0);
 
-                const diff = (taskDate - today) / (1000 * 60 * 60 * 24);
+            const diff = (taskDate - today) / (1000 * 60 * 60 * 24);
 
-                if (diff === 0) return 'Bugun';
-                if (diff === 1) return 'Ertaga';
-                if (diff === -1) return 'Kecha';
-                
-                return date.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short' });
-            } catch (error) {
-                console.error('Date format error:', error);
-                return dateString;
-            }
+            if (diff === 0) return 'Bugun';
+            if (diff === 1) return 'Ertaga';
+            if (diff === -1) return 'Kecha';
+            
+            return date.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short' });
         }
 
-        function getPermission(list) {
-            if (!isOnlineMode) return 'creator';
-            if (!currentUser) return 'viewer';
-            if (list.owner === currentUser.uid) return 'creator';
-            if (list.sharedWith && list.sharedWith[currentUser.email.replace(/\./g, '_')]) {
-                return list.sharedWith[currentUser.email.replace(/\./g, '_')];
-            }
-            return 'viewer';
+        function formatDateTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
         }
 
-        // ===== DATA OPERATIONS =====
-        
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return `${hours}s ${minutes}d`;
+        }
+
+        function renderSharedUsers(list) {
+            const container = document.getElementById(`sharedUsers${list.id}`);
+            if (!container || !list.sharedWith) return;
+
+            container.innerHTML = '';
+            Object.keys(list.sharedWith).forEach(email => {
+                const perm = list.sharedWith[email];
+                const div = document.createElement('div');
+                div.className = 'shared-user-item';
+                div.innerHTML = `
+                    <span>${sanitizeInput(email.replace(/_/g, '.'))}</span>
+                    <span class="permission-badge perm-${perm}">
+                        ${perm === 'viewer' ? '👁️ Kuzatuvchi' : perm === 'editor' ? '✏️ Tahrirlovchi' : '⚙️ Boshqaruvchi'}
+                    </span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
         async function saveData(listId, isShared) {
             try {
                 if (isOnlineMode) {
@@ -1359,63 +1821,7 @@
                 }
                 updateStats();
             } catch (error) {
-                console.error('Save data error:', error);
-                showError('Ma\'lumotlarni saqlashda xatolik');
-            }
-        }
-
-        async function updateListTitle(listId, newTitle, isShared) {
-            const title = newTitle.trim();
-            if (!title) {
-                showError('Ro\'yxat nomi bo\'sh bo\'lishi mumkin emas');
-                renderLists();
-                return;
-            }
-            
-            if (title.length > 100) {
-                showError('Ro\'yxat nomi 100 belgidan oshmasligi kerak');
-                return;
-            }
-            
-            try {
-                const list = lists.find(l => l.id === listId);
-                if (!list) return;
-                
-                list.title = title;
-                
-                if (isOnlineMode) {
-                    const path = isShared ? `sharedLists/${listId}/title` : `users/${currentUser.uid}/lists/${listId}/title`;
-                    await database.ref(path).set(title);
-                } else {
-                    saveToLocal();
-                }
-            } catch (error) {
-                console.error('Update title error:', error);
-                showError('Nomni yangilashda xatolik');
-            }
-        }
-
-        async function deleteList(listId, isShared) {
-            if (!confirm('Rostdan ham bu ro\'yxatni o\'chirmoqchimisiz? Bu amalni ortga qaytarib bo\'lmaydi!')) return;
-            
-            try {
-                showLoading(true);
-                
-                if (isOnlineMode) {
-                    const path = isShared ? `sharedLists/${listId}` : `users/${currentUser.uid}/lists/${listId}`;
-                    await database.ref(path).remove();
-                    showSuccess('Ro\'yxat o\'chirildi');
-                } else {
-                    lists = lists.filter(l => l.id !== listId);
-                    saveToLocal();
-                    renderLists();
-                    showSuccess('Ro\'yxat o\'chirildi');
-                }
-            } catch (error) {
-                console.error('Delete list error:', error);
-                showError('Ro\'yxatni o\'chirishda xatolik');
-            } finally {
-                showLoading(false);
+                showError('Saqlashda xatolik');
             }
         }
 
@@ -1424,25 +1830,17 @@
             const title = input.value.trim();
 
             if (!title) {
-                input.classList.add('error');
                 showError('Ro\'yxat nomini kiriting');
-                setTimeout(() => input.classList.remove('error'), 2000);
-                return;
-            }
-
-            if (title.length > 100) {
-                showError('Ro\'yxat nomi 100 belgidan oshmasligi kerak');
                 return;
             }
 
             try {
-                const btn = document.getElementById('newListBtn');
-                btn.disabled = true;
                 showLoading(true);
 
                 const newList = {
                     title: sanitizeInput(title),
                     tasks: [],
+                    tags: [],
                     createdAt: Date.now()
                 };
 
@@ -1450,154 +1848,440 @@
                     newList.owner = currentUser.uid;
                     newList.ownerName = currentUser.displayName;
                     await database.ref(`users/${currentUser.uid}/lists`).push(newList);
-                    showSuccess('Ro\'yxat yaratildi');
                 } else {
                     newList.id = 'list_' + Date.now();
                     lists.push(newList);
                     saveToLocal();
                     renderLists();
-                    showSuccess('Ro\'yxat yaratildi');
                 }
 
                 input.value = '';
+                showSuccess('Ro\'yxat yaratildi');
             } catch (error) {
-                console.error('Create list error:', error);
-                showError('Ro\'yxat yaratishda xatolik');
+                showError('Yaratishda xatolik');
             } finally {
-                document.getElementById('newListBtn').disabled = false;
                 showLoading(false);
             }
+        }
+
+        async function deleteList(listId, isShared) {
+            if (!confirm('Rostdan ham o\'chirmoqchimisiz?')) return;
+            
+            try {
+                showLoading(true);
+                
+                if (isOnlineMode) {
+                    const path = isShared ? `sharedLists/${listId}` : `users/${currentUser.uid}/lists/${listId}`;
+                    await database.ref(path).remove();
+                } else {
+                    lists = lists.filter(l => l.id !== listId);
+                    saveToLocal();
+                    renderLists();
+                }
+                
+                showSuccess('Ro\'yxat o\'chirildi');
+            } catch (error) {
+                showError('O\'chirishda xatolik');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function duplicateList(listId) {
+            const list = lists.find(l => l.id === listId);
+            if (!list) return;
+            
+            showLoading(true);
+            
+            const newList = {
+                title: list.title + ' (Nusxa)',
+                tasks: JSON.parse(JSON.stringify(list.tasks || [])),
+                tags: JSON.parse(JSON.stringify(list.tags || [])),
+                createdAt: Date.now()
+            };
+            
+            try {
+                if (isOnlineMode) {
+                    newList.owner = currentUser.uid;
+                    newList.ownerName = currentUser.displayName;
+                    await database.ref(`users/${currentUser.uid}/lists`).push(newList);
+                } else {
+                    newList.id = 'list_' + Date.now();
+                    lists.push(newList);
+                    saveToLocal();
+                    renderLists();
+                }
+                
+                showSuccess('Nusxa olindi');
+            } catch (error) {
+                showError('Nusxa olishda xatolik');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function updateListTitle(listId, newTitle, isShared) {
+            const title = newTitle.trim();
+            if (!title) {
+                renderLists();
+                return;
+            }
+            
+            const list = lists.find(l => l.id === listId);
+            if (!list) return;
+            
+            list.title = title;
+            await saveData(listId, isShared);
+        }
+
+        function openTagModal(listId, isShared) {
+            const list = lists.find(l => l.id === listId);
+            if (!list) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="modal-title">Teglar boshqaruvi</div>
+                        <span class="modal-close" onclick="this.closest('.modal').remove()">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div style="display:flex;gap:5px;margin-bottom:10px">
+                            <input type="text" id="newTagInput" placeholder="Yangi teg..." style="flex:1;padding:8px;border:1px solid var(--border);border-radius:5px;background:var(--bg-card);color:var(--text-main)">
+                            <button onclick="addListTag('${listId}', ${isShared})" style="padding:8px 15px;background:var(--primary);color:white;border:none;border-radius:5px;cursor:pointer">Qo'shish</button>
+                        </div>
+                        <div id="modalTags" class="tags-section">
+                            ${list.tags ? list.tags.map(tag => `
+                                <span class="tag">${sanitizeInput(tag)} 
+                                    <span class="tag-remove" onclick="removeListTag('${listId}', '${tag}', ${isShared})">×</span>
+                                </span>
+                            `).join('') : '<p style="color:var(--text-secondary);font-size:13px">Hozircha teglar yo\'q</p>'}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        async function addListTag(listId, isShared) {
+            const input = document.getElementById('newTagInput');
+            const tag = input.value.trim();
+            
+            if (!tag) return;
+            
+            const list = lists.find(l => l.id === listId);
+            if (!list) return;
+            
+            if (!list.tags) list.tags = [];
+            
+            if (list.tags.includes(tag)) {
+                showError('Bu teg allaqachon mavjud');
+                return;
+            }
+            
+            list.tags.push(tag);
+            await saveData(listId, isShared);
+            input.value = '';
+            
+            const modalTags = document.getElementById('modalTags');
+            if (modalTags) {
+                modalTags.innerHTML = list.tags.map(t => `
+                    <span class="tag">${sanitizeInput(t)} 
+                        <span class="tag-remove" onclick="removeListTag('${listId}', '${t}', ${isShared})">×</span>
+                    </span>
+                `).join('');
+            }
+            
+            renderLists();
+            showSuccess('Teg qo\'shildi');
+        }
+
+        async function removeListTag(listId, tag, isShared) {
+            const list = lists.find(l => l.id === listId);
+            if (!list || !list.tags) return;
+            
+            list.tags = list.tags.filter(t => t !== tag);
+            await saveData(listId, isShared);
+            
+            const modalTags = document.getElementById('modalTags');
+            if (modalTags) {
+                modalTags.innerHTML = list.tags.length ? list.tags.map(t => `
+                    <span class="tag">${sanitizeInput(t)} 
+                        <span class="tag-remove" onclick="removeListTag('${listId}', '${t}', ${isShared})">×</span>
+                    </span>
+                `).join('') : '<p style="color:var(--text-secondary);font-size:13px">Hozircha teglar yo\'q</p>';
+            }
+            
+            renderLists();
         }
 
         async function addTask(listId, isShared) {
             const input = document.getElementById(`taskInput${listId}`);
             const deadlineInput = document.getElementById(`deadlineInput${listId}`);
+            const recurringSelect = document.getElementById(`recurringSelect${listId}`);
             const text = input.value.trim();
             
             if (!text) {
-                input.classList.add('error');
                 showError('Vazifa matnini kiriting');
-                setTimeout(() => input.classList.remove('error'), 2000);
                 return;
             }
 
-            if (text.length > 500) {
-                showError('Vazifa matni 500 belgidan oshmasligi kerak');
-                return;
+            const list = lists.find(l => l.id === listId);
+            if (!list) return;
+            
+            if (!list.tasks) list.tasks = [];
+            
+            const newTask = {
+                text: sanitizeInput(text),
+                completed: false,
+                status: 'todo',
+                priority: 'medium',
+                createdAt: Date.now(),
+                subtasks: [],
+                comments: []
+            };
+
+            if (isOnlineMode) {
+                newTask.createdBy = currentUser.uid;
             }
 
-            try {
-                const list = lists.find(l => l.id === listId);
-                if (!list) return;
-                
-                if (!list.tasks) list.tasks = [];
-                
-                const newTask = {
-                    text: sanitizeInput(text),
-                    completed: false,
-                    status: 'todo',
-                    priority: 'medium',
-                    starred: false,
-                    createdAt: Date.now()
-                };
-
-                if (isOnlineMode) {
-                    newTask.createdBy = currentUser.uid;
-                }
-
-                if (deadlineInput.value) {
-                    newTask.deadline = deadlineInput.value;
-                }
-
-                list.tasks.push(newTask);
-                await saveData(listId, isShared);
-                
-                input.value = '';
-                deadlineInput.value = '';
-                renderLists();
-            } catch (error) {
-                console.error('Add task error:', error);
-                showError('Vazifa qo\'shishda xatolik');
+            if (deadlineInput.value) {
+                newTask.deadline = deadlineInput.value;
             }
+            
+            if (recurringSelect.value) {
+                newTask.recurring = recurringSelect.value;
+            }
+
+            list.tasks.push(newTask);
+            await saveData(listId, isShared);
+            
+            input.value = '';
+            deadlineInput.value = '';
+            recurringSelect.value = '';
+            renderLists();
+            showSuccess('Vazifa qo\'shildi');
         }
 
         async function updateTaskText(listId, index, newText, isShared) {
             const text = newText.trim();
             if (!text) {
-                showError('Vazifa matni bo\'sh bo\'lishi mumkin emas');
                 renderLists();
                 return;
             }
             
-            if (text.length > 500) {
-                showError('Vazifa matni 500 belgidan oshmasligi kerak');
-                return;
+            const list = lists.find(l => l.id === listId);
+            if (!list || !list.tasks[index]) return;
+            
+            list.tasks[index].text = sanitizeInput(text);
+            
+            if (list.tasks[index].isSharedTask && list.tasks[index].sharedTaskId) {
+                await database.ref(`sharedTasks/${list.tasks[index].sharedTaskId}/text`).set(sanitizeInput(text));
             }
             
-            try {
-                const list = lists.find(l => l.id === listId);
-                if (!list || !list.tasks[index]) return;
-                
-                list.tasks[index].text = sanitizeInput(text);
-                await saveData(listId, isShared);
-            } catch (error) {
-                console.error('Update task text error:', error);
-                showError('Vazifa matnini yangilashda xatolik');
-            }
+            await saveData(listId, isShared);
         }
 
         async function toggleTask(listId, index, isShared) {
-            try {
-                const list = lists.find(l => l.id === listId);
-                if (!list || !list.tasks[index]) return;
-                
-                list.tasks[index].completed = !list.tasks[index].completed;
-                await saveData(listId, isShared);
-                renderLists();
-            } catch (error) {
-                console.error('Toggle task error:', error);
-                showError('Vazifa holatini o\'zgartirishda xatolik');
+            const list = lists.find(l => l.id === listId);
+            if (!list || !list.tasks[index]) return;
+            
+            const task = list.tasks[index];
+            task.completed = !task.completed;
+            
+            if (task.recurring && task.completed) {
+                task.lastCompletedDate = Date.now();
             }
-        }
-
-        async function toggleStar(listId, index, isShared) {
-            try {
-                const list = lists.find(l => l.id === listId);
-                if (!list || !list.tasks[index]) return;
-                
-                list.tasks[index].starred = !list.tasks[index].starred;
-                await saveData(listId, isShared);
-                renderLists();
-            } catch (error) {
-                console.error('Toggle star error:', error);
-                showError('Yulduzcha qo\'yishda xatolik');
+            
+            const timerKey = listId + '_' + index;
+            if (timers[timerKey]) {
+                clearInterval(timers[timerKey].interval);
+                delete timers[timerKey];
+            }
+            
+            if (task.isSharedTask && task.sharedTaskId) {
+                await database.ref(`sharedTasks/${task.sharedTaskId}/completed`).set(task.completed);
+            }
+            
+            await saveData(listId, isShared);
+            renderLists();
+            
+            if (task.completed) {
+                showSuccess('Vazifa bajarildi! 🎉');
             }
         }
 
         async function updateTaskStatus(listId, index, status, isShared) {
-            try {
-                const list = lists.find(l => l.id === listId);
-                if (!list || !list.tasks[index]) return;
-                
-                list.tasks[index].status = status;
-                await saveData(listId, isShared);
-            } catch (error) {
-                console.error('Update status error:', error);
-                showError('Statusni yangilashda xatolik');
+            const list = lists.find(l => l.id === listId);
+            if (!list || !list.tasks[index]) return;
+            
+            list.tasks[index].status = status;
+            
+            if (list.tasks[index].isSharedTask && list.tasks[index].sharedTaskId) {
+                await database.ref(`sharedTasks/${list.tasks[index].sharedTaskId}/status`).set(status);
             }
+            
+            await saveData(listId, isShared);
         }
 
         async function updateTaskPriority(listId, index, priority, isShared) {
-            try {
-                const list = lists.find(l => l.id === listId);
-                if (!list || !list.tasks[index]) return;
+            const list = lists.find(l => l.id === listId);
+            if (!list || !list.tasks[index]) return;
+            
+            list.tasks[index].priority = priority;
+            
+            if (list.tasks[index].isSharedTask && list.tasks[index].sharedTaskId) {
+                await database.ref(`sharedTasks/${list.tasks[index].sharedTaskId}/priority`).set(priority);
+            }
+            
+            await saveData(listId, isShared);
+            renderLists();
+        }
+
+        async function deleteTask(listId, index, isShared) {
+            if (!confirm('Bu vazifani o\'chirmoqchimisiz?')) return;
+            
+            const list = lists.find(l => l.id === listId);
+            if (!list) return;
+            
+            const task = list.tasks[index];
+            
+            const timerKey = listId + '_' + index;
+            if (timers[timerKey]) {
+                clearInterval(timers[timerKey].interval);
+                delete timers[timerKey];
+            }
+            
+            if (task.isSharedTask && task.sharedTaskId) {
+                await database.ref(`sharedTasks/${task.sharedTaskId}`).remove();
+            }
+            
+            list.tasks.splice(index, 1);
+            await saveData(listId, isShared);
+            renderLists();
+            showSuccess('Vazifa o\'chirildi');
+        }
+
+        async function addSubtask(listId, index, isShared) {
+            const input = document.getElementById(`subtaskInput${listId}${index}`);
+            const text = input.value.trim();
+            
+            if (!text) return;
+            
+            const list = lists.find(l => l.id === listId);
+            if (!list || !list.tasks[index]) return;
+            
+            if (!list.tasks[index].subtasks) {
+                list.tasks[index].subtasks = [];
+            }
+            
+            list.tasks[index].subtasks.push({
+                text: sanitizeInput(text),
+                completed: false,
+                createdAt: Date.now()
+            });
+            
+            if (list.tasks[index].isSharedTask && list.tasks[index].sharedTaskId) {
+                await database.ref(`sharedTasks/${list.tasks[index].sharedTaskId}/subtasks`).set(list.tasks[index].subtasks);
+            }
+            
+            await saveData(listId, isShared);
+            input.value = '';
+            renderLists();
+            showSuccess('Quyi vazifa qo\'shildi');
+        }
+
+        async function toggleSubtask(listId, index, subIndex, isShared) {
+            const list = lists.find(l => l.id === listId);
+            if (!list || !list.tasks[index] || !list.tasks[index].subtasks[subIndex]) return;
+            
+            list.tasks[index].subtasks[subIndex].completed = !list.tasks[index].subtasks[subIndex].completed;
+            
+            if (list.tasks[index].isSharedTask && list.tasks[index].sharedTaskId) {
+                await database.ref(`sharedTasks/${list.tasks[index].sharedTaskId}/subtasks`).set(list.tasks[index].subtasks);
+            }
+            
+            await saveData(listId, isShared);
+            renderLists();
+        }
+
+        async function deleteSubtask(listId, index, subIndex, isShared) {
+            const list = lists.find(l => l.id === listId);
+            if (!list || !list.tasks[index]) return;
+            
+            list.tasks[index].subtasks.splice(subIndex, 1);
+            
+            if (list.tasks[index].isSharedTask && list.tasks[index].sharedTaskId) {
+                await database.ref(`sharedTasks/${list.tasks[index].sharedTaskId}/subtasks`).set(list.tasks[index].subtasks);
+            }
+            
+            await saveData(listId, isShared);
+            renderLists();
+        }
+
+        async function addComment(listId, index, isShared) {
+            const input = document.getElementById(`commentInput${listId}${index}`);
+            const text = input.value.trim();
+            
+            if (!text) return;
+            
+            const list = lists.find(l => l.id === listId);
+            if (!list || !list.tasks[index]) return;
+            
+            if (!list.tasks[index].comments) {
+                list.tasks[index].comments = [];
+            }
+            
+            list.tasks[index].comments.push({
+                text: sanitizeInput(text),
+                author: currentUser ? currentUser.displayName : 'Foydalanuvchi',
+                timestamp: Date.now()
+            });
+            
+            if (list.tasks[index].isSharedTask && list.tasks[index].sharedTaskId) {
+                await database.ref(`sharedTasks/${list.tasks[index].sharedTaskId}/comments`).set(list.tasks[index].comments);
+            }
+            
+            await saveData(listId, isShared);
+            input.value = '';
+            renderLists();
+            showSuccess('Izoh qo\'shildi');
+        }
+
+        function toggleTimer(listId, index, isShared) {
+            const timerKey = listId + '_' + index;
+            const btn = document.getElementById(`timerBtn${listId}${index}`);
+            
+            if (timers[timerKey]) {
+                clearInterval(timers[timerKey].interval);
+                const timeSpent = timers[timerKey].elapsed;
+                delete timers[timerKey];
                 
-                list.tasks[index].priority = priority;
-                await saveData(listId, isShared);
+                const list = lists.find(l => l.id === listId);
+                if (list && list.tasks[index]) {
+                    if (!list.tasks[index].timeSpent) {
+                        list.tasks[index].timeSpent = 0;
+                    }
+                    list.tasks[index].timeSpent += timeSpent;
+                    saveData(listId, isShared);
+                }
+                
+                btn.textContent = '▶️ Boshlash';
+                btn.classList.remove('running');
                 renderLists();
-            } catch (error) {
-                console.error('Update priority error:', error);
-                showError('Prioritetni yangilashda xatolik');
+                showSuccess('Vaqt saqlandi');
+            } else {
+                timers[timerKey] = {
+                    startTime: Date.now(),
+                    elapsed: 0,
+                    interval: setInterval(() => {
+                        timers[timerKey].elapsed = Math.floor((Date.now() - timers[timerKey].startTime) / 1000);
+                    }, 1000)
+                };
+                
+                btn.textContent = '⏸️ To\'xtatish';
+                btn.classList.add('running');
             }
         }
 
@@ -1605,8 +2289,7 @@
             const file = input.files[0];
             if (!file) return;
 
-            // File size validation
-            if (!validateFileSize(file, 10)) {
+            if (file.size > 10 * 1024 * 1024) {
                 showError('Fayl hajmi 10MB dan kichik bo\'lishi kerak!');
                 input.value = '';
                 return;
@@ -1622,89 +2305,41 @@
                 if (!list || !list.tasks[index]) return;
                 
                 if (isOnlineMode) {
-                    // Custom metadata qo'shish
-                    const metadata = {
-                        contentType: file.type || 'application/octet-stream',
-                        customMetadata: {
-                            'uploadedBy': currentUser.uid,
-                            'uploadedAt': new Date().toISOString(),
-                            'taskId': `${listId}_${index}`
-                        }
-                    };
-
-                    // Unique va xavfsiz filename generatsiya
                     const timestamp = Date.now();
                     const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_').substring(0, 100);
                     const fileName = `${timestamp}_${safeName}`;
                     const filePath = `files/${currentUser.uid}/${fileName}`;
                     
                     const storageRef = storage.ref(filePath);
-                    
-                    // Upload with progress tracking
-                    const uploadTask = storageRef.put(file, metadata);
+                    const uploadTask = storageRef.put(file);
                     
                     uploadTask.on('state_changed', 
                         (snapshot) => {
-                            // Progress tracking
                             const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                             label.textContent = `${Math.round(progress)}%`;
                         },
                         (error) => {
-                            // Detailed error handling
-                            console.error('Upload error:', error);
-                            console.log('Error code:', error.code);
-                            console.log('Error message:', error.message);
-                            
-                            let errorMessage = 'Fayl yuklashda xatolik';
-                            
-                            if (error.code === 'storage/unauthorized') {
-                                errorMessage = 'Ruxsat yo\'q. Firebase Storage Rules\'ni tekshiring yoki qayta kiring.';
-                                setTimeout(() => {
-                                    if (confirm(errorMessage + '\n\nQayta kirishni xohlaysizmi?')) {
-                                        auth.signOut().then(() => {
-                                            window.location.reload();
-                                        });
-                                    }
-                                }, 100);
-                            } else if (error.code === 'storage/canceled') {
-                                errorMessage = 'Yuklash bekor qilindi';
-                            } else if (error.code === 'storage/quota-exceeded') {
-                                errorMessage = 'Storage limiti tugadi. Firebase Console\'da limitni oshiring.';
-                            } else if (error.code === 'storage/retry-limit-exceeded') {
-                                errorMessage = 'Network xatolik. Internet aloqasini tekshiring va qayta urinib ko\'ring.';
-                            } else if (error.code === 'storage/invalid-checksum') {
-                                errorMessage = 'Fayl buzilgan. Qayta yuklang.';
-                            } else if (error.code === 'storage/unknown') {
-                                errorMessage = 'Noma\'lum xatolik. CORS sozlamalarini tekshiring.';
-                                console.error('CORS muammosi bo\'lishi mumkin. Firebase Storage CORS konfiguratsiyasini tekshiring.');
-                            }
-                            
-                            showError(errorMessage);
+                            showError('Fayl yuklashda xatolik');
                             label.classList.remove('uploading');
                             label.textContent = '📎 Fayl';
                         },
                         async () => {
-                            // Upload complete
-                            try {
-                                const url = await uploadTask.snapshot.ref.getDownloadURL();
-                                
-                                list.tasks[index].fileUrl = url;
-                                list.tasks[index].fileName = file.name;
-                                list.tasks[index].fileSize = file.size;
-                                list.tasks[index].fileType = file.type;
-                                list.tasks[index].uploadedAt = Date.now();
-                                
-                                await saveData(listId, isShared);
-                                renderLists();
-                                showSuccess('Fayl muvaffaqiyatli yuklandi!');
-                            } catch (error) {
-                                console.error('Get URL error:', error);
-                                showError('Fayl URL olishda xatolik. Qayta urinib ko\'ring.');
+                            const url = await uploadTask.snapshot.ref.getDownloadURL();
+                            
+                            list.tasks[index].fileUrl = url;
+                            list.tasks[index].fileName = file.name;
+                            
+                            if (list.tasks[index].isSharedTask && list.tasks[index].sharedTaskId) {
+                                await database.ref(`sharedTasks/${list.tasks[index].sharedTaskId}/fileUrl`).set(url);
+                                await database.ref(`sharedTasks/${list.tasks[index].sharedTaskId}/fileName`).set(file.name);
                             }
+                            
+                            await saveData(listId, isShared);
+                            renderLists();
+                            showSuccess('Fayl yuklandi!');
                         }
                     );
                 } else {
-                    // Offline mode - base64 (hajm cheklangan)
                     if (file.size > 5 * 1024 * 1024) {
                         showError('Offline rejimda fayl hajmi 5MB dan kichik bo\'lishi kerak!');
                         input.value = '';
@@ -1715,35 +2350,16 @@
                     
                     const reader = new FileReader();
                     reader.onload = async function(e) {
-                        try {
-                            list.tasks[index].fileUrl = e.target.result;
-                            list.tasks[index].fileName = file.name;
-                            list.tasks[index].fileSize = file.size;
-                            list.tasks[index].fileType = file.type;
-                            list.tasks[index].isOfflineFile = true;
-                            saveToLocal();
-                            renderLists();
-                            showSuccess('Fayl yuklandi (offline)');
-                        } catch (error) {
-                            console.error('Offline save error:', error);
-                            showError('Faylni saqlashda xatolik');
-                        }
-                    };
-                    reader.onerror = function(error) {
-                        console.error('FileReader error:', error);
-                        showError('Faylni o\'qishda xatolik');
+                        list.tasks[index].fileUrl = e.target.result;
+                        list.tasks[index].fileName = file.name;
+                        saveToLocal();
+                        renderLists();
+                        showSuccess('Fayl yuklandi (offline)');
                     };
                     reader.readAsDataURL(file);
                 }
             } catch (error) {
-                console.error('Upload file error:', error);
-                let errorMsg = 'Fayl yuklashda xatolik';
-                
-                if (error.message && error.message.includes('CORS')) {
-                    errorMsg = 'CORS xatolik. Firebase Storage sozlamalarini tekshiring.';
-                }
-                
-                showError(errorMsg);
+                showError('Fayl yuklashda xatolik');
             } finally {
                 setTimeout(() => {
                     if (label) {
@@ -1755,39 +2371,18 @@
             }
         }
 
-        async function deleteTask(listId, index, isShared) {
-            if (!confirm('Bu vazifani o\'chirmoqchimisiz?')) return;
-            
-            try {
-                const list = lists.find(l => l.id === listId);
-                if (!list) return;
-                
-                list.tasks.splice(index, 1);
-                await saveData(listId, isShared);
-                renderLists();
-                showSuccess('Vazifa o\'chirildi');
-            } catch (error) {
-                console.error('Delete task error:', error);
-                showError('Vazifani o\'chirishda xatolik');
-            }
-        }
-
         async function shareList(listId) {
             const emailInput = document.getElementById(`shareEmail${listId}`);
             const email = emailInput.value.trim();
             const permission = document.getElementById(`sharePerm${listId}`).value;
 
             if (!email) {
-                emailInput.classList.add('error');
                 showError('Email manzilini kiriting');
-                setTimeout(() => emailInput.classList.remove('error'), 2000);
                 return;
             }
 
             if (!validateEmail(email)) {
-                emailInput.classList.add('error');
                 showError('Email manzili noto\'g\'ri');
-                setTimeout(() => emailInput.classList.remove('error'), 2000);
                 return;
             }
 
@@ -1797,57 +2392,463 @@
             }
 
             try {
-                const btn = document.querySelector(`#shareEmail${listId}`).nextElementSibling.nextElementSibling;
-                btn.disabled = true;
-                
                 await database.ref(`sharedLists/${listId}/sharedWith/${email.replace(/\./g, '_')}`).set(permission);
                 emailInput.value = '';
                 showSuccess('Ro\'yxat ulashildi');
             } catch (error) {
-                console.error('Share list error:', error);
                 showError('Ulashishda xatolik');
-            } finally {
-                const btn = document.querySelector(`#shareEmail${listId}`).nextElementSibling.nextElementSibling;
-                if (btn) btn.disabled = false;
             }
         }
 
-        function renderSharedUsers(list) {
+        async function shareTask(listId, index) {
+            const emailInput = document.getElementById(`shareTaskEmail${listId}${index}`);
+            const email = emailInput.value.trim();
+            const permission = document.getElementById(`shareTaskPerm${listId}${index}`).value;
+
+            if (!email) {
+                showError('Email manzilini kiriting');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showError('Email manzili noto\'g\'ri');
+                return;
+            }
+
+            if (email === currentUser.email) {
+                showError('O\'zingizga ulasha olmaysiz');
+                return;
+            }
+
             try {
-                const container = document.getElementById(`sharedUsers${list.id}`);
-                if (!container || !list.sharedWith) return;
-
-                container.innerHTML = '';
-                Object.keys(list.sharedWith).forEach(email => {
-                    const perm = list.sharedWith[email];
-                    const div = document.createElement('div');
-                    div.className = 'shared-user-item';
-                    div.innerHTML = `
-                        <span>${sanitizeInput(email.replace(/_/g, '.'))}</span>
-                        <span class="permission-badge perm-${perm}">
-                            ${perm === 'viewer' ? 'Kuzatuvchi' : perm === 'executor' ? 'Bajaruvchi' : 'Yaratuvchi'}
-                        </span>
-                    `;
-                    container.appendChild(div);
-                });
+                const list = lists.find(l => l.id === listId);
+                if (!list || !list.tasks[index]) return;
+                
+                const task = list.tasks[index];
+                
+                const sharedTaskData = {
+                    ...task,
+                    listId: listId,
+                    owner: currentUser.uid,
+                    ownerName: currentUser.displayName,
+                    sharedWith: {
+                        [email.replace(/\./g, '_')]: permission
+                    }
+                };
+                
+                const sharedTaskRef = await database.ref('sharedTasks').push(sharedTaskData);
+                
+                list.tasks[index].isSharedTask = true;
+                list.tasks[index].sharedTaskId = sharedTaskRef.key;
+                list.tasks[index].sharedWith = sharedTaskData.sharedWith;
+                
+                await saveData(listId, list.isShared);
+                emailInput.value = '';
+                renderLists();
+                showSuccess('Vazifa ulashildi!');
             } catch (error) {
-                console.error('Render shared users error:', error);
+                console.error('Share task error:', error);
+                showError('Vazifani ulashishda xatolik');
             }
         }
 
-        // ===== EVENT LISTENERS =====
-        
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const monthTitle = document.getElementById('calendarMonth');
+            
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+            
+            monthTitle.textContent = currentCalendarDate.toLocaleDateString('uz-UZ', { year: 'numeric', month: 'long' });
+            
+            grid.innerHTML = '';
+            
+            const days = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'];
+            days.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-day-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const prevLastDay = new Date(year, month, 0);
+            
+            const firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+            const lastDayDate = lastDay.getDate();
+            const prevLastDayDate = prevLastDay.getDate();
+            
+            const today = new Date();
+            
+            for (let i = firstDayIndex; i > 0; i--) {
+                const day = document.createElement('div');
+                day.className = 'calendar-day other-month';
+                day.innerHTML = `<div class="calendar-day-number">${prevLastDayDate - i + 1}</div>`;
+                grid.appendChild(day);
+            }
+            
+            for (let i = 1; i <= lastDayDate; i++) {
+                const day = document.createElement('div');
+                const currentDate = new Date(year, month, i);
+                
+                day.className = 'calendar-day';
+                if (currentDate.toDateString() === today.toDateString()) {
+                    day.classList.add('today');
+                }
+                
+                let tasksHTML = '';
+                lists.forEach(list => {
+                    if (!list.tasks) return;
+                    list.tasks.forEach(task => {
+                        if (task.deadline) {
+                            const deadline = new Date(task.deadline);
+                            if (deadline.toDateString() === currentDate.toDateString()) {
+                                tasksHTML += `<div class="calendar-task-item" title="${task.text}">${task.text}</div>`;
+                            }
+                        }
+                    });
+                });
+                
+                day.innerHTML = `<div class="calendar-day-number">${i}</div>${tasksHTML}`;
+                grid.appendChild(day);
+            }
+            
+            const totalCells = firstDayIndex + lastDayDate;
+            const remainingCells = 42 - totalCells;
+            for (let i = 1; i <= remainingCells; i++) {
+                const day = document.createElement('div');
+                day.className = 'calendar-day other-month';
+                day.innerHTML = `<div class="calendar-day-number">${i}</div>`;
+                grid.appendChild(day);
+            }
+        }
+
+        function previousMonth() {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function currentMonth() {
+            currentCalendarDate = new Date();
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        function renderAnalytics() {
+            renderActivityChart();
+            renderPriorityChart();
+            renderCompletionStats();
+        }
+
+        function renderActivityChart() {
+            const ctx = document.getElementById('activityChart');
+            if (!ctx) return;
+            
+            if (activityChart) activityChart.destroy();
+            
+            const days = [];
+            const completedData = [];
+            const createdData = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                days.push(date.toLocaleDateString('uz-UZ', { weekday: 'short' }));
+                
+                let completed = 0;
+                let created = 0;
+                
+                lists.forEach(list => {
+                    if (!list.tasks) return;
+                    list.tasks.forEach(task => {
+                        const taskDate = new Date(task.createdAt);
+                        if (taskDate.toDateString() === date.toDateString()) {
+                            created++;
+                        }
+                        if (task.completed && task.lastCompletedDate) {
+                            const completedDate = new Date(task.lastCompletedDate);
+                            if (completedDate.toDateString() === date.toDateString()) {
+                                completed++;
+                            }
+                        }
+                    });
+                });
+                
+                completedData.push(completed);
+                createdData.push(created);
+            }
+            
+            activityChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: days,
+                    datasets: [{
+                        label: 'Yaratilgan',
+                        data: createdData,
+                        borderColor: 'rgb(102, 126, 234)',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.3
+                    }, {
+                        label: 'Bajarilgan',
+                        data: completedData,
+                        borderColor: 'rgb(40, 167, 69)',
+                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderPriorityChart() {
+            const ctx = document.getElementById('priorityChart');
+            if (!ctx) return;
+            
+            if (priorityChart) priorityChart.destroy();
+            
+            const priorities = { low: 0, medium: 0, high: 0, critical: 0 };
+            
+            lists.forEach(list => {
+                if (!list.tasks) return;
+                list.tasks.forEach(task => {
+                    if (!task.completed) {
+                        const priority = task.priority || 'medium';
+                        priorities[priority]++;
+                    }
+                });
+            });
+            
+            priorityChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Past', 'O\'rta', 'Yuqori', 'Kritik'],
+                    datasets: [{
+                        data: [priorities.low, priorities.medium, priorities.high, priorities.critical],
+                        backgroundColor: [
+                            'rgb(108, 117, 125)',
+                            'rgb(255, 193, 7)',
+                            'rgb(255, 107, 53)',
+                            'rgb(220, 53, 69)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderCompletionStats() {
+            const container = document.getElementById('completionStats');
+            if (!container) return;
+            
+            let totalTime = 0;
+            let avgCompletionTime = 0;
+            let completedCount = 0;
+            
+            lists.forEach(list => {
+                if (!list.tasks) return;
+                list.tasks.forEach(task => {
+                    if (task.timeSpent) {
+                        totalTime += task.timeSpent;
+                    }
+                    if (task.completed && task.createdAt && task.lastCompletedDate) {
+                        const time = (task.lastCompletedDate - task.createdAt) / (1000 * 60 * 60 * 24);
+                        avgCompletionTime += time;
+                        completedCount++;
+                    }
+                });
+            });
+            
+            avgCompletionTime = completedCount > 0 ? avgCompletionTime / completedCount : 0;
+            
+            container.innerHTML = `
+                <div class="stats-bar">
+                    <div class="stat-card">
+                        <div class="stat-number">${formatTime(totalTime)}</div>
+                        <div class="stat-label">Jami sarflangan vaqt</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${avgCompletionTime.toFixed(1)} kun</div>
+                        <div class="stat-label">O'rtacha bajarilish vaqti</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${lists.length}</div>
+                        <div class="stat-label">Ro'yxatlar soni</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTemplates() {
+            const container = document.getElementById('templatesContainer');
+            if (!container) return;
+            
+            container.innerHTML = templates.map((template, index) => `
+                <div class="template-card" onclick="useTemplate(${index})">
+                    <div class="template-title">${template.title}</div>
+                    <div class="template-description">${template.description}</div>
+                    <div style="margin-top: 10px; font-size: 12px; color: var(--text-secondary);">
+                        ${template.tasks.length} ta vazifa
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function useTemplate(index) {
+            const template = templates[index];
+            if (!template) return;
+            
+            try {
+                showLoading(true);
+                
+                const newList = {
+                    title: template.title,
+                    tasks: JSON.parse(JSON.stringify(template.tasks)),
+                    tags: [],
+                    createdAt: Date.now()
+                };
+                
+                newList.tasks = newList.tasks.map(task => ({
+                    ...task,
+                    completed: false,
+                    subtasks: [],
+                    comments: [],
+                    createdAt: Date.now()
+                }));
+                
+                if (isOnlineMode) {
+                    newList.owner = currentUser.uid;
+                    newList.ownerName = currentUser.displayName;
+                    await database.ref(`users/${currentUser.uid}/lists`).push(newList);
+                } else {
+                    newList.id = 'list_' + Date.now();
+                    lists.push(newList);
+                    saveToLocal();
+                    renderLists();
+                }
+                
+                switchTab('lists');
+                showSuccess('Shablon qo\'llanildi!');
+            } catch (error) {
+                showError('Shablon yaratishda xatolik');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function openImportModal() {
+            document.getElementById('importModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        async function importData() {
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showError('Faylni tanlang');
+                return;
+            }
+            
+            try {
+                showLoading(true);
+                
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        
+                        if (!Array.isArray(data)) {
+                            showError('Fayl formati noto\'g\'ri');
+                            return;
+                        }
+                        
+                        for (const list of data) {
+                            if (isOnlineMode) {
+                                await database.ref(`users/${currentUser.uid}/lists`).push({
+                                    ...list,
+                                    owner: currentUser.uid,
+                                    ownerName: currentUser.displayName,
+                                    importedAt: Date.now()
+                                });
+                            } else {
+                                list.id = 'list_' + Date.now() + '_' + Math.random();
+                                lists.push(list);
+                            }
+                        }
+                        
+                        if (!isOnlineMode) {
+                            saveToLocal();
+                            renderLists();
+                        }
+                        
+                        closeModal('importModal');
+                        showSuccess(`${data.length} ta ro'yxat import qilindi!`);
+                    } catch (error) {
+                        showError('Faylni o\'qishda xatolik');
+                    } finally {
+                        showLoading(false);
+                    }
+                };
+                reader.readAsText(file);
+            } catch (error) {
+                showError('Import qilishda xatolik');
+                showLoading(false);
+            }
+        }
+
+        function exportAllData() {
+            try {
+                const dataToExport = lists.map(list => ({
+                    title: list.title,
+                    tasks: list.tasks || [],
+                    tags: list.tags || [],
+                    createdAt: list.createdAt
+                }));
+                
+                const dataStr = JSON.stringify(dataToExport, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `checkbox_task_backup_${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                URL.revokeObjectURL(url);
+                showSuccess('Ma\'lumotlar eksport qilindi!');
+            } catch (error) {
+                showError('Eksport qilishda xatolik');
+            }
+        }
+
         document.getElementById('newListBtn').addEventListener('click', createList);
         
         document.getElementById('newListInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                createList();
-            }
+            if (e.key === 'Enter') createList();
         });
 
-        // ===== INITIALIZE =====
-        
-        // Handle online/offline status
         window.addEventListener('online', () => {
             if (currentUser && !isOnlineMode) {
                 showSuccess('Internet aloqasi qayta ulandi');
@@ -1858,10 +2859,12 @@
 
         window.addEventListener('offline', () => {
             if (isOnlineMode) {
-                showError('Internet aloqasi yo\'q. Offline rejimda ishlayapsiz.');
+                showNotification('Internet aloqasi yo\'q. Offline rejimda ishlayapsiz.', 'warning', 5000);
                 isOnlineMode = false;
             }
         });
+
+        console.log('✅ CheckBox Task yuklandi');
     </script>
 </body>
 </html>
