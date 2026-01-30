@@ -1810,18 +1810,37 @@
 
         async function saveData(listId, isShared) {
             try {
-                if (isOnlineMode) {
-                    const list = lists.find(l => l.id === listId);
-                    if (!list) return;
-                    
+                const list = lists.find(l => l.id === listId);
+                if (!list) {
+                    console.error('List not found in saveData:', listId);
+                    return;
+                }
+                
+                console.log('Saving list:', listId, 'isShared:', isShared, 'isOnlineMode:', isOnlineMode);
+                
+                if (isOnlineMode && currentUser) {
                     const path = isShared ? `sharedLists/${listId}` : `users/${currentUser.uid}/lists/${listId}`;
-                    await database.ref(path).set(list);
+                    console.log('Saving to Firebase path:', path);
+                    
+                    await database.ref(path).set({
+                        title: list.title,
+                        tasks: list.tasks || [],
+                        tags: list.tags || [],
+                        owner: list.owner || currentUser.uid,
+                        ownerName: list.ownerName || currentUser.displayName,
+                        createdAt: list.createdAt || Date.now()
+                    });
+                    
+                    console.log('Successfully saved to Firebase');
                 } else {
+                    console.log('Saving to local storage');
                     saveToLocal();
                 }
                 updateStats();
+                renderLists();
             } catch (error) {
-                showError('Saqlashda xatolik');
+                console.error('Save data error:', error);
+                showError('Saqlashda xatolik: ' + error.message);
             }
         }
 
@@ -2027,41 +2046,57 @@
                 return;
             }
 
-            const list = lists.find(l => l.id === listId);
-            if (!list) return;
-            
-            if (!list.tasks) list.tasks = [];
-            
-            const newTask = {
-                text: sanitizeInput(text),
-                completed: false,
-                status: 'todo',
-                priority: 'medium',
-                createdAt: Date.now(),
-                subtasks: [],
-                comments: []
-            };
+            try {
+                const list = lists.find(l => l.id === listId);
+                if (!list) {
+                    console.error('List not found:', listId);
+                    showError('Ro\'yxat topilmadi');
+                    return;
+                }
+                
+                console.log('Adding task to list:', listId, 'Online mode:', isOnlineMode);
+                
+                if (!list.tasks) {
+                    list.tasks = [];
+                }
+                
+                const newTask = {
+                    text: sanitizeInput(text),
+                    completed: false,
+                    status: 'todo',
+                    priority: 'medium',
+                    createdAt: Date.now(),
+                    subtasks: [],
+                    comments: []
+                };
 
-            if (isOnlineMode) {
-                newTask.createdBy = currentUser.uid;
-            }
+                if (isOnlineMode && currentUser) {
+                    newTask.createdBy = currentUser.uid;
+                }
 
-            if (deadlineInput.value) {
-                newTask.deadline = deadlineInput.value;
-            }
-            
-            if (recurringSelect.value) {
-                newTask.recurring = recurringSelect.value;
-            }
+                if (deadlineInput.value) {
+                    newTask.deadline = deadlineInput.value;
+                }
+                
+                if (recurringSelect.value) {
+                    newTask.recurring = recurringSelect.value;
+                }
 
-            list.tasks.push(newTask);
-            await saveData(listId, isShared);
-            
-            input.value = '';
-            deadlineInput.value = '';
-            recurringSelect.value = '';
-            renderLists();
-            showSuccess('Vazifa qo\'shildi');
+                list.tasks.push(newTask);
+                
+                console.log('Task added to local array, now saving...');
+                await saveData(listId, isShared);
+                
+                input.value = '';
+                deadlineInput.value = '';
+                recurringSelect.value = '';
+                
+                console.log('Task saved successfully');
+                showSuccess('Vazifa qo\'shildi');
+            } catch (error) {
+                console.error('Add task error:', error);
+                showError('Vazifa qo\'shishda xatolik: ' + error.message);
+            }
         }
 
         async function updateTaskText(listId, index, newText, isShared) {
